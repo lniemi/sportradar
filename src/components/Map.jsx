@@ -28,6 +28,36 @@ function Map() {
         maxzoom: 14
       })
       map.current.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 })
+
+      // Load TOR330.geojson
+      fetch('/TOR330.geojson')
+        .then(response => response.json())
+        .then(data => {
+          map.current.addSource('tor330', {
+            type: 'geojson',
+            data: data
+          })
+
+          map.current.addLayer({
+            id: 'tor330-line',
+            type: 'line',
+            source: 'tor330',
+            paint: {
+              'line-color': '#ffff00',
+              'line-width': 3
+            }
+          })
+
+          // Calculate bounds and zoom to extent
+          const coordinates = data.features[0].geometry.coordinates[0]
+          const bounds = coordinates.reduce((bounds, coord) => {
+            return bounds.extend(coord)
+          }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]))
+
+          map.current.fitBounds(bounds, {
+            padding: 50
+          })
+        })
     })
 
     return () => {
