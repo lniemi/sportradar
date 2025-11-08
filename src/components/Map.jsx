@@ -13,9 +13,21 @@ function Map() {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: 'mapbox://styles/mapbox/standard',
       center: [0, 0],
-      zoom: 2
+      zoom: 2,
+      projection: 'globe',
+      terrain: { source: 'mapbox-dem', exaggeration: 1.5 }
+    })
+
+    map.current.on('style.load', () => {
+      map.current.addSource('mapbox-dem', {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.terrain-rgb',
+        tileSize: 512,
+        maxzoom: 14
+      })
+      map.current.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 })
     })
 
     return () => {
