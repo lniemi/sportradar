@@ -3,7 +3,7 @@
   bottom: 100px;
   right: 10%;
   transform: translateX(50%);
-  z-index: 40;
+  z-index: 35;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -20,7 +20,11 @@
 }
 
 .ar-button.shifted {
-  bottom: 235px;
+  bottom: 340px;
+}
+
+.ar-button.shifted-expanded {
+  bottom: 640px;
 }
 
 .ar-button:hover {

@@ -1,18 +1,28 @@
 import { useState } from 'react'
 import './Leaderboard.css'
 
-export default function Leaderboard({ athletes = [], isAthleteInfoExpanded = false }) {
+export default function Leaderboard({ athletes = [], hasSelectedAthlete = false, isAthleteInfoExpanded = false }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleLeaderboard = () => {
     setIsOpen(!isOpen)
   }
 
+  // Determine button class based on athlete info states
+  const getButtonClass = () => {
+    if (isAthleteInfoExpanded) {
+      return 'leaderboard-button shifted-expanded'
+    } else if (hasSelectedAthlete) {
+      return 'leaderboard-button shifted'
+    }
+    return 'leaderboard-button'
+  }
+
   return (
     <>
       {/* Leaderboard Button */}
       <button
-        className={`leaderboard-button ${isAthleteInfoExpanded ? 'shifted' : ''}`}
+        className={getButtonClass()}
         onClick={toggleLeaderboard}
         aria-label="Toggle leaderboard"
       >

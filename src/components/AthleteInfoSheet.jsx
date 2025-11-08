@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import './AthleteInfoSheet.css'
 
-export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simulatedAthleteId = null, onExpandChange }) {
+export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simulatedAthleteId = null, onExpandChange, onSelectionChange }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedAthlete, setSelectedAthlete] = useState(null)
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const filteredAthletes = athletes.filter(athlete =>
     athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,9 +37,16 @@ export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simul
   // Notify parent when athlete info is expanded/collapsed
   useEffect(() => {
     if (onExpandChange) {
-      onExpandChange(!!selectedAthlete)
+      onExpandChange(!!selectedAthlete && isExpanded)
     }
-  }, [selectedAthlete, onExpandChange])
+  }, [selectedAthlete, isExpanded, onExpandChange])
+
+  // Notify parent when athlete is selected/deselected
+  useEffect(() => {
+    if (onSelectionChange) {
+      onSelectionChange(selectedAthlete)
+    }
+  }, [selectedAthlete, onSelectionChange])
 
   // Calculate current position based on distance ranking
   const getCurrentPosition = (athlete) => {
@@ -50,6 +58,7 @@ export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simul
     setSelectedAthlete(athlete)
     setShowSearchResults(false)
     setSearchTerm(athlete.name)
+    setIsExpanded(false)
     if (onSelectAthlete) {
       onSelectAthlete(athlete)
     }
@@ -62,6 +71,16 @@ export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simul
   const handleSearchBlur = () => {
     // Delay to allow click on search result
     setTimeout(() => setShowSearchResults(false), 200)
+  }
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded)
+  }
+
+  const handleClosePanel = () => {
+    setSelectedAthlete(null)
+    setSearchTerm('')
+    setIsExpanded(false)
   }
 
   return (
@@ -113,68 +132,108 @@ export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simul
 
       {/* Athlete Info Panel */}
       {selectedAthlete && (
-        <div className="athlete-info-panel">
-          <div className="athlete-header">
-            <div className="athlete-main-info">
-              <h3 className="athlete-name">{selectedAthlete.name}</h3>
-              {selectedAthlete.bib && (
-                <span className="athlete-bib-large">#{selectedAthlete.bib}</span>
-              )}
-            </div>
-            <button className="camera-button" aria-label="View athlete camera">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <rect x="2" y="7" width="20" height="15" rx="2" />
-                <path d="M17 7l5-5v15l-5-5" />
+        <div className={`athlete-info-panel ${isExpanded ? 'expanded' : ''}`}>
+          {/* Header Section */}
+          <div className="athlete-card-header">
+            <button
+              className="close-button"
+              onClick={handleClosePanel}
+              aria-label="Close athlete info"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 5L5 15M5 5l10 10" />
               </svg>
+            </button>
+
+            <div className="header-top">
+              <div className="position-badge">
+                <span className="position-number">{getCurrentPosition(selectedAthlete)}</span>
+              </div>
+
+              <div className="header-center">
+                <div className="bib-container">
+                  {selectedAthlete.nationality && (
+                    <span className="nationality-flag">{selectedAthlete.nationality}</span>
+                  )}
+                  <span className="bib-number">#{selectedAthlete.bib}</span>
+                </div>
+                <h3 className="athlete-name">{selectedAthlete.name}</h3>
+                <div className="distance-display">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 0C5.8 0 4 1.8 4 4c0 2.4 4 8 4 8s4-5.6 4-8c0-2.2-1.8-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+                  </svg>
+                  <span className="distance-value">{selectedAthlete.distance.toFixed(1)} km</span>
+                </div>
+              </div>
+
+              <div className="athlete-photo">
+                {selectedAthlete.photo ? (
+                  <img src={selectedAthlete.photo} alt={selectedAthlete.name} />
+                ) : (
+                  <div className="photo-placeholder">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="currentColor">
+                      <circle cx="20" cy="12" r="8" />
+                      <path d="M4 36c0-8.8 7.2-16 16-16s16 7.2 16 16" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Age and Club Info */}
+            <div className="basic-info">
+              <div className="info-row">
+                <span className="info-label">Age:</span>
+                <span className="info-value">{selectedAthlete.age || 'N/A'}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Club:</span>
+                <span className="info-value">{selectedAthlete.club || 'N/A'}</span>
+              </div>
+            </div>
+
+            {/* Toggle Button */}
+            <button
+              className="show-more-button"
+              onClick={toggleExpanded}
+              aria-label={isExpanded ? "Show less" : "Show more"}
+            >
+              {isExpanded ? 'Show less' : 'Show more'}
             </button>
           </div>
 
-          <div className="athlete-stats">
-            <div className="stat-item">
-              <svg
-                className="stat-icon"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-              >
-                <path d="M8 0C5.8 0 4 1.8 4 4c0 2.4 4 8 4 8s4-5.6 4-8c0-2.2-1.8-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-              </svg>
-              <span className="stat-value">{selectedAthlete.distance.toFixed(1)} km</span>
-            </div>
+          {/* Expanded Section */}
+          {isExpanded && (
+            <div className="athlete-card-expanded">
+              {/* Previous Experiences */}
+              {selectedAthlete.previousExperiences && selectedAthlete.previousExperiences.length > 0 && (
+                <div className="experiences-section">
+                  <h4 className="section-title">Previous experiences:</h4>
+                  <ul className="experiences-list">
+                    {selectedAthlete.previousExperiences.map((exp, index) => (
+                      <li key={index} className="experience-item">{exp}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            <div className="stat-item">
-              <span className="position-label">Position</span>
-              <span className="position-value">{getCurrentPosition(selectedAthlete)}</span>
-            </div>
-
-            {selectedAthlete.speed && (
-              <div className="stat-item">
-                <svg
-                  className="stat-icon"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                >
-                  <path d="M8 2L2 14h12L8 2zm0 3.5L11.5 12h-7L8 5.5z" />
-                </svg>
-                <span className="stat-value">{selectedAthlete.speed.toFixed(1)} km/h</span>
-              </div>
-            )}
-          </div>
-
-          {selectedAthlete.checkpoint && (
-            <div className="checkpoint-info">
-              <span className="checkpoint-label">Last checkpoint:</span>
-              <span className="checkpoint-value">{selectedAthlete.checkpoint}</span>
+              {/* Sponsors */}
+              {selectedAthlete.sponsors && selectedAthlete.sponsors.length > 0 && (
+                <div className="sponsors-section">
+                  <h4 className="section-title">Sponsors</h4>
+                  <div className="sponsors-grid">
+                    {selectedAthlete.sponsors.map((sponsor, index) => (
+                      <div key={index} className="sponsor-logo">
+                        {sponsor.logo ? (
+                          <img src={sponsor.logo} alt={sponsor.name} />
+                        ) : (
+                          <div className="sponsor-placeholder">{sponsor.name}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

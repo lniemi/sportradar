@@ -1,9 +1,19 @@
 import './ARButton.css'
 
-export default function ARButton({ isAthleteInfoExpanded = false, onClick }) {
+export default function ARButton({ hasSelectedAthlete = false, isAthleteInfoExpanded = false, onClick }) {
+  // Determine button class based on athlete info states
+  const getButtonClass = () => {
+    if (isAthleteInfoExpanded) {
+      return 'ar-button shifted-expanded'
+    } else if (hasSelectedAthlete) {
+      return 'ar-button shifted'
+    }
+    return 'ar-button'
+  }
+
   return (
     <button
-      className={`ar-button ${isAthleteInfoExpanded ? 'shifted' : ''}`}
+      className={getButtonClass()}
       onClick={onClick}
       aria-label="Toggle AR view"
     >

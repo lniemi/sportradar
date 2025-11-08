@@ -3,7 +3,7 @@
   bottom: 100px;
   left: 10%;
   transform: translateX(-50%);
-  z-index: 50;
+  z-index: 35;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -20,7 +20,11 @@
 }
 
 .leaderboard-button.shifted {
-  bottom: 235px;
+  bottom: 340px;
+}
+
+.leaderboard-button.shifted-expanded {
+  bottom: 640px;
 }
 
 .leaderboard-button:hover {
@@ -43,7 +47,7 @@
   background: rgba(30, 30, 30, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 12px 12px 0 0;
-  z-index: 50;
+  z-index: 40;
   transition: transform 0.3s ease;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
   display: flex;

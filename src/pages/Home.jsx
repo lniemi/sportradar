@@ -17,6 +17,7 @@ function Home() {
   const [athletes, setAthletes] = useState([])
   const [currentAthleteState, setCurrentAthleteState] = useState(null)
   const [simulatedAthleteId, setSimulatedAthleteId] = useState(null)
+  const [selectedAthlete, setSelectedAthlete] = useState(null)
   const [isAthleteInfoExpanded, setIsAthleteInfoExpanded] = useState(false)
 
   // Listen for commands from SimulationManager window
@@ -190,13 +191,22 @@ function Home() {
       <Navbar />
       <Map ref={mapRef} />
       <RaceTimer startTime={raceStartTime} isRunning={isRaceRunning} />
-      <Leaderboard athletes={athletes} isAthleteInfoExpanded={isAthleteInfoExpanded} />
-      <ARButton isAthleteInfoExpanded={isAthleteInfoExpanded} onClick={handleARButtonClick} />
+      <Leaderboard
+        athletes={athletes}
+        hasSelectedAthlete={!!selectedAthlete}
+        isAthleteInfoExpanded={isAthleteInfoExpanded}
+      />
+      <ARButton
+        hasSelectedAthlete={!!selectedAthlete}
+        isAthleteInfoExpanded={isAthleteInfoExpanded}
+        onClick={handleARButtonClick}
+      />
       <AthleteInfoSheet
         athletes={athletes}
         onSelectAthlete={handleSelectAthlete}
         simulatedAthleteId={simulatedAthleteId}
         onExpandChange={setIsAthleteInfoExpanded}
+        onSelectionChange={setSelectedAthlete}
       />
     </div>
   )
