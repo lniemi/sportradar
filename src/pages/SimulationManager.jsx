@@ -183,7 +183,7 @@ export default function SimulationManager() {
                   <input
                     type="range"
                     min="1"
-                    max="500"
+                    max="99999"
                     step="1"
                     value={speed}
                     onChange={handleSpeedChange}
