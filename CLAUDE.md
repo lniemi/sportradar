@@ -47,12 +47,14 @@ The app uses a **localStorage-based message passing system** for communication b
 
 **SimulationManager → Home (commands)**:
 - Writes to `localStorage.setItem('simulation_command', JSON.stringify({ command, data }))`
-- Commands: `start_single_athlete`, `start`, `pause`, `resume`, `stop`, `reset`, `set_speed`
+- Single-athlete commands: `start_single_athlete`, `start`, `pause`, `resume`, `stop`, `reset`, `set_speed`
+- Multi-athlete commands: `start_multiple_athletes`, `pause_athlete`, `resume_athlete`, `stop_athlete`, `set_athlete_speed`
 - Home listens via `storage` event handler
 
 **Home → SimulationManager (state updates)**:
 - Writes to `localStorage.setItem('simulation_state', JSON.stringify(state))`
-- Broadcasts simulation state every 100ms (position, distance, progress, speed, etc.)
+- Single-athlete mode: Broadcasts state with `mode: 'single'` every 100ms (position, distance, progress, speed, etc.)
+- Multi-athlete mode: Broadcasts state with `mode: 'multiple'` containing array of all athlete states
 - SimulationManager listens via `storage` event handler
 
 This pattern enables real-time synchronization between windows without a backend.
@@ -64,11 +66,22 @@ This pattern enables real-time synchronization between windows without a backend
 - Loads the TOR330 route from [public/TOR330.geojson](public/TOR330.geojson)
 - Renders the route as a yellow line layer
 - Auto-fits the map bounds to the route extent
-- Exposes `updateAthletePosition(lng, lat)` and `removeAthleteMarker()` methods via ref
+- **Single-athlete mode methods** (via ref):
+  - `updateAthletePosition(lng, lat)` - Updates single athlete marker position
+  - `removeAthleteMarker()` - Removes single athlete marker
+- **Multi-athlete mode methods** (via ref):
+  - `updateAthletePositions(athletes)` - Updates multiple athlete markers (array of {id, name, position, lng, lat})
+  - `removeAthleteMarkerById(athleteId)` - Removes specific athlete marker
+  - `clearAllAthleteMarkers()` - Removes all athlete markers
+  - `fitToAthletes()` - Adjusts map bounds to show all athletes
+- **Marker styling**: Color-coded by position (gold for 1st, silver for 2nd, bronze for 3rd, red for others)
+- **Implementation note**: Component named `MapComponent` internally to avoid conflict with JavaScript's built-in `Map` constructor
 
 ### Athlete Simulation System
 
-The simulation system allows virtual athletes to traverse routes for testing and development:
+The simulation system allows virtual athletes to traverse routes for testing and development. It supports both **single-athlete** and **multi-athlete** simulation modes:
+
+#### Single-Athlete Simulation
 
 **Core module**: [src/simulations/athleteSimulation.js](src/simulations/athleteSimulation.js)
 - `AthleteSimulation` class manages simulated athlete movement along the route
@@ -77,12 +90,33 @@ The simulation system allows virtual athletes to traverse routes for testing and
 - Provides controls: start, pause, resume, stop, reset, and speed adjustment
 - Returns current state including position (lng/lat/elevation), distance covered, progress %, elapsed time, and finish status
 
-**Utilities**: [src/simulations/utils.js](src/simulations/utils.js)
+#### Multi-Athlete Simulation
+
+**Core module**: [src/simulations/multiAthleteSimulation.js](src/simulations/multiAthleteSimulation.js)
+- `MultiAthleteSimulation` class manages multiple concurrent `AthleteSimulation` instances
+- Each athlete runs independently with their own simulation instance
+- **Global controls**: `start()`, `pause()`, `resume()`, `stop()`, `reset()`, `setGlobalSpeed(speed)`
+- **Individual controls**: `pauseAthlete(id)`, `resumeAthlete(id)`, `stopAthlete(id)`, `setAthleteSpeed(id, speed)`
+- **State methods**:
+  - `getAllStates()` - Returns array of all athlete states
+  - `getAthleteState(id)` - Returns specific athlete state
+  - `areAllFinished()` - Checks if all athletes have completed the route
+
+#### Shared Utilities
+
+**Module**: [src/simulations/utils.js](src/simulations/utils.js)
 - `haversineDistance()` - Calculates distance between two geographic points
 - `calculateTotalDistance()` - Sums distances along an entire route
 - `getPositionAtDistance()` - Interpolates position at a specific distance along the route
 
-**Key pattern**: Home page maintains multiple athlete states, but only one is actively simulated. Non-simulated athletes display static distance/position from mock data. When simulation runs, that athlete's data updates in real-time.
+#### Simulation Architecture
+
+- **Single-athlete mode**: Home.jsx maintains one `AthleteSimulation` instance in `simulationRef`
+- **Multi-athlete mode**: Home.jsx maintains one `MultiAthleteSimulation` instance in `multiSimulationRef` that manages multiple athlete simulations internally
+- Both modes are mutually exclusive - starting one mode stops the other
+- All athletes share the same route data (loaded once per simulation instance for efficiency)
+- Map displays update every 100ms with current positions
+- Leaderboard automatically sorts athletes by distance in real-time
 
 ### UI Components
 
@@ -162,11 +196,61 @@ AthleteInfoSheet notifies the parent via callbacks:
 - `onSelectionChange(athlete)` - Called when athlete is selected/deselected
 - `onExpandChange(isExpanded)` - Called when info panel expands/collapses
 
+### Simulation Manager UI
+
+[src/pages/SimulationManager.jsx](src/pages/SimulationManager.jsx) provides a control panel for managing both single and multiple athlete simulations:
+
+#### Single-Athlete Mode
+- Dropdown to select individual athlete
+- "Start Single Athlete Simulation" button (disabled when simulation is active)
+- Shows athlete's base speed and initial distance position
+
+#### Multi-Athlete Mode
+- "Start Multiple Athletes" button to simulate selected athletes
+- Athlete selection UI with checkboxes (only visible when no simulation is active)
+- "Select All" / "Clear" buttons for bulk selection
+- Counter showing `selectedAthletes.length / total` athletes selected
+
+#### Controls Panel
+
+**Single-Athlete Controls:**
+- Speed slider (1-99999 km/h)
+- Play/Pause/Stop/Reset buttons
+- Live status showing progress %, distance, time, elevation, GPS coordinates
+- Athlete info card (name, bib)
+
+**Multi-Athlete Controls:**
+- Global speed slider (applies to all athletes)
+- Global play/pause/stop/reset buttons
+- Individual athlete cards sorted by distance, showing:
+  - Position rank, name, bib number
+  - Current distance and speed
+  - Status indicators (⏸ Paused, 🏁 Finished)
+  - Individual pause/resume/stop buttons
+  - Individual speed slider (1-50 km/h)
+- Overall status panel showing total athletes and completion state
+- Scrollable list (max-height: 384px) for many athletes
+
+#### Usage Instructions
+
+1. Open SimulationManager in one browser window/tab
+2. Open Home (map view) in another window/tab
+3. **For single-athlete**: Select athlete from dropdown, click "Start Single Athlete Simulation"
+4. **For multi-athlete**: Check desired athletes, click "Start Multiple Athletes"
+5. Use controls to manage simulation (pause, speed changes, etc.)
+6. View real-time updates on both windows
+
 ### Data Files
 
 Route data is stored in [public/](public/):
 - `TOR330.geojson` - Full race route (converted from GPX)
 - `TOR330_waypoints.geojson` - Key waypoints along the route
+
+Mock athlete data is defined in [src/simulations/mockAthletes.js](src/simulations/mockAthletes.js):
+- 10 athletes with unique IDs, names, bib numbers
+- Each has `baseSpeed`, `initialDistance`, age, nationality, club
+- Includes previous race experiences and sponsors
+- Helper functions: `getAthleteById(id)`, `getAthleteByBib(bib)`
 
 The root directory contains source files including `TOR330-CERT-2025.gpx` (original GPX route file).
 
@@ -176,3 +260,5 @@ The root directory contains source files including `TOR330-CERT-2025.gpx` (origi
 - Map state managed via refs to prevent re-renders
 - Route coordinates format: `[longitude, latitude, elevation]`
 - GeoJSON features use MultiLineString geometry (access via `features[0].geometry.coordinates[0]`)
+- Simulation modes are mutually exclusive (starting one stops the other)
+- Use `window.Map()` instead of `Map()` when JavaScript's Map constructor is needed in Map.jsx to avoid naming conflicts

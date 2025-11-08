@@ -5,9 +5,11 @@ import RaceTimer from '../components/RaceTimer'
 import Leaderboard from '../components/Leaderboard'
 import AthleteInfoSheet from '../components/AthleteInfoSheet'
 import ARButton from '../components/ARButton'
+import StreetLevelView from '../components/StreetLevelView'
 import { createAthleteSimulation } from '../simulations/athleteSimulation'
 import { createMultiAthleteSimulation } from '../simulations/multiAthleteSimulation'
 import { mockAthletes } from '../simulations/mockAthletes'
+import { getNearestCameraPosition } from '../utils/cameraPositions'
 
 function Home() {
   const mapRef = useRef(null)
@@ -23,6 +25,9 @@ function Home() {
   const [isMultiAthleteMode, setIsMultiAthleteMode] = useState(false)
   const [selectedAthlete, setSelectedAthlete] = useState(null)
   const [isAthleteInfoExpanded, setIsAthleteInfoExpanded] = useState(false)
+  const [isStreetViewOpen, setIsStreetViewOpen] = useState(false)
+  const [streetViewPosition, setStreetViewPosition] = useState(null)
+  const [athletePositionsForVR, setAthletePositionsForVR] = useState([])
 
   // Listen for commands from SimulationManager window
   useEffect(() => {
@@ -308,6 +313,9 @@ function Home() {
         // Update all markers on map
         mapRef.current.updateAthletePositions(athletePositions)
 
+        // Also update positions for VR view
+        setAthletePositionsForVR(athletePositions)
+
         // Broadcast all states to SimulationManager
         localStorage.setItem('simulation_state', JSON.stringify({
           mode: 'multiple',
@@ -329,7 +337,33 @@ function Home() {
 
   const handleARButtonClick = () => {
     console.log('AR button clicked')
-    // AR functionality to be implemented
+
+    // Determine camera position based on current simulation state
+    let position = null
+
+    if (isMultiAthleteMode && athletePositionsForVR.length > 0) {
+      // Use the position of the leading athlete
+      const leader = athletePositionsForVR[0]
+      if (leader) {
+        position = getNearestCameraPosition(leader.lng, leader.lat)
+      }
+    } else if (simulation && currentAthleteState?.position) {
+      // Use single athlete position
+      position = getNearestCameraPosition(
+        currentAthleteState.position.lng,
+        currentAthleteState.position.lat
+      )
+    } else {
+      // Default to a scenic viewpoint (Col de la Seigne)
+      position = {
+        lng: 6.8012,
+        lat: 45.7456,
+        estimatedElevation: 2516
+      }
+    }
+
+    setStreetViewPosition(position)
+    setIsStreetViewOpen(true)
   }
 
   return (
@@ -353,6 +387,12 @@ function Home() {
         simulatedAthleteId={simulatedAthleteId}
         onExpandChange={setIsAthleteInfoExpanded}
         onSelectionChange={setSelectedAthlete}
+      />
+      <StreetLevelView
+        isOpen={isStreetViewOpen}
+        onClose={() => setIsStreetViewOpen(false)}
+        athletePositions={athletePositionsForVR}
+        currentPosition={streetViewPosition}
       />
     </div>
   )
