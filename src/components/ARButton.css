@@ -1,0 +1,33 @@
+.ar-button {
+  position: fixed;
+  bottom: 100px;
+  right: 10%;
+  transform: translateX(50%);
+  z-index: 40;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(30, 30, 30, 0.9);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.ar-button.shifted {
+  bottom: 235px;
+}
+
+.ar-button:hover {
+  background: rgba(50, 50, 50, 0.95);
+  transform: translateX(50%) scale(1.05);
+}
+
+.ar-button.shifted:hover {
+  transform: translateX(50%) scale(1.05);
+}

@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import RaceTimer from '../components/RaceTimer'
 import Leaderboard from '../components/Leaderboard'
 import AthleteInfoSheet from '../components/AthleteInfoSheet'
+import ARButton from '../components/ARButton'
 import { createAthleteSimulation } from '../simulations/athleteSimulation'
 import { mockAthletes } from '../simulations/mockAthletes'
 
@@ -179,12 +180,18 @@ function Home() {
     console.log('Selected athlete:', athlete)
   }
 
+  const handleARButtonClick = () => {
+    console.log('AR button clicked')
+    // AR functionality to be implemented
+  }
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <Navbar />
       <Map ref={mapRef} />
       <RaceTimer startTime={raceStartTime} isRunning={isRaceRunning} />
       <Leaderboard athletes={athletes} isAthleteInfoExpanded={isAthleteInfoExpanded} />
+      <ARButton isAthleteInfoExpanded={isAthleteInfoExpanded} onClick={handleARButtonClick} />
       <AthleteInfoSheet
         athletes={athletes}
         onSelectAthlete={handleSelectAthlete}
