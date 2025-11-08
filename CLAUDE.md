@@ -102,8 +102,65 @@ All spectator UI components use fixed positioning to overlay the map with semi-t
 **AthleteInfoSheet**: [src/components/AthleteInfoSheet.jsx](src/components/AthleteInfoSheet.jsx)
 - Search bar positioned at bottom center of screen
 - Search functionality by athlete name or bib number
-- Selected athlete info panel displays distance, position, speed, and checkpoint
+- Selected athlete info panel displays athlete details (age, club, nationality, photo)
+- Expandable section shows previous race experiences and sponsors
 - Auto-selects simulated athlete when simulation starts
+- Notifies parent component of selection and expansion state changes
+
+**ARButton**: [src/components/ARButton.jsx](src/components/ARButton.jsx)
+- Fixed position button for AR view toggle
+- Dynamically shifts position based on athlete info sheet state
+- Eye icon design for AR functionality
+
+### Z-Index Layer Management
+
+All fixed-position UI components use carefully managed z-index values to ensure proper layering. The stacking order from top to bottom is:
+
+**Z-Index Hierarchy:**
+1. **Leaderboard panel (open)**: `z-index: 60` - Highest priority when expanded
+2. **Search results dropdown**: `z-index: 50` - Must appear above all buttons
+3. **AthleteInfoSheet container**: `z-index: 45` - Creates stacking context for search
+4. **Leaderboard & AR buttons**: `z-index: 35` - Above athlete info panel
+5. **Athlete info panel**: `z-index: -1` (relative) - Below buttons, inside sheet container
+
+**Critical Design Notes:**
+- The AthleteInfoSheet container has `z-index: 45` to create a stacking context that allows the search results dropdown (inside it) to appear above the buttons (z-index: 35)
+- The athlete-info-panel inside AthleteInfoSheet has `z-index: -1` to ensure it renders below the buttons
+- The leaderboard panel has the highest z-index (60) to appear above all elements when opened
+- Search results have `z-index: 50` within their container to appear above buttons
+
+**Button Position Shifting:**
+
+Both Leaderboard and AR buttons dynamically adjust their vertical position based on the AthleteInfoSheet state:
+
+```css
+/* Base position when no athlete selected */
+bottom: 100px;
+
+/* Shifted when athlete is selected (not expanded) */
+bottom: 340px;  /* .shifted class */
+
+/* Shifted when athlete info is expanded */
+bottom: 640px;  /* .shifted-expanded class */
+```
+
+The buttons receive two props from Home.jsx:
+- `hasSelectedAthlete`: Boolean indicating if an athlete is selected
+- `isAthleteInfoExpanded`: Boolean indicating if the athlete info is expanded
+
+This ensures buttons always appear above the athlete info sheet in all states.
+
+**State Management Pattern:**
+
+Home.jsx tracks both selection and expansion states:
+```javascript
+const [selectedAthlete, setSelectedAthlete] = useState(null)
+const [isAthleteInfoExpanded, setIsAthleteInfoExpanded] = useState(false)
+```
+
+AthleteInfoSheet notifies the parent via callbacks:
+- `onSelectionChange(athlete)` - Called when athlete is selected/deselected
+- `onExpandChange(isExpanded)` - Called when info panel expands/collapses
 
 ### Data Files
 
