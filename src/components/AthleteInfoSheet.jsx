@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './AthleteInfoSheet.css'
 
-export default function AthleteInfoSheet({ athletes = [], onSelectAthlete }) {
+export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simulatedAthleteId = null }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedAthlete, setSelectedAthlete] = useState(null)
   const [showSearchResults, setShowSearchResults] = useState(false)
@@ -10,6 +10,18 @@ export default function AthleteInfoSheet({ athletes = [], onSelectAthlete }) {
     athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (athlete.bib && athlete.bib.toString().includes(searchTerm))
   )
+
+  // Auto-select simulated athlete when simulation starts
+  useEffect(() => {
+    if (simulatedAthleteId) {
+      const simulatedAthlete = athletes.find(a => a.id === simulatedAthleteId)
+      if (simulatedAthlete) {
+        console.log('[AthleteInfoSheet] Auto-selecting simulated athlete:', simulatedAthlete.name)
+        setSelectedAthlete(simulatedAthlete)
+        setSearchTerm(simulatedAthlete.name)
+      }
+    }
+  }, [simulatedAthleteId, athletes])
 
   // Update selected athlete data when athletes array changes
   useEffect(() => {

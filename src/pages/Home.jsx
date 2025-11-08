@@ -15,6 +15,7 @@ function Home() {
   const [isRaceRunning, setIsRaceRunning] = useState(false)
   const [athletes, setAthletes] = useState([])
   const [currentAthleteState, setCurrentAthleteState] = useState(null)
+  const [simulatedAthleteId, setSimulatedAthleteId] = useState(null)
 
   // Listen for commands from SimulationManager window
   useEffect(() => {
@@ -34,19 +35,39 @@ function Home() {
   }, [])
 
   const handleCommand = async (command, data = {}) => {
+    console.log('[Home] handleCommand received:', command, data)
     switch (command) {
       case 'start_single_athlete':
-        if (!simulationRef.current) {
-          const sim = createAthleteSimulation(data.athlete)
-          await sim.initialize()
-          if (data.speed) {
-            sim.setSpeed(data.speed)
+        console.log('[Home] Starting single athlete simulation for:', data.athlete?.name, 'initialDistance:', data.athlete?.initialDistance)
+
+        // Stop existing simulation if switching athletes
+        if (simulationRef.current) {
+          console.log('[Home] Stopping existing simulation')
+          simulationRef.current.stop()
+          if (mapRef.current) {
+            mapRef.current.removeAthleteMarker()
           }
-          simulationRef.current = sim
-          setSimulation(sim)
-          setRaceStartTime(Date.now())
-          setIsRaceRunning(true)
         }
+
+        // Create new simulation with selected athlete
+        const sim = createAthleteSimulation(data.athlete)
+        await sim.initialize()
+        console.log('[Home] Simulation initialized')
+
+        // Set speed before starting if provided
+        if (data.speed) {
+          console.log('[Home] Setting initial speed to:', data.speed)
+          sim.speed = data.speed  // Set speed directly without calling setSpeed()
+        }
+
+        console.log('[Home] Calling sim.start()')
+        sim.start() // Start immediately at athlete's initial position
+        simulationRef.current = sim
+        setSimulation(sim)
+        setSimulatedAthleteId(data.athlete?.id)
+        setRaceStartTime(Date.now())
+        setIsRaceRunning(true)
+        console.log('[Home] Simulation started for athlete ID:', data.athlete?.id)
         break
 
       case 'start':
@@ -77,6 +98,7 @@ function Home() {
           }
           simulationRef.current = null
           setSimulation(null)
+          setSimulatedAthleteId(null)
           setIsRaceRunning(false)
           setRaceStartTime(null)
         }
@@ -165,6 +187,7 @@ function Home() {
       <AthleteInfoSheet
         athletes={athletes}
         onSelectAthlete={handleSelectAthlete}
+        simulatedAthleteId={simulatedAthleteId}
       />
     </div>
   )

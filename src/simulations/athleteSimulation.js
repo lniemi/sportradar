@@ -13,6 +13,9 @@ export class AthleteSimulation {
     this.isPaused = false
     this.pausedDistance = 0
     this.athleteData = athleteData // Store athlete info (name, bib, id, etc.)
+    this.initialDistance = athleteData?.initialDistance || 0 // Starting position on route
+
+    console.log('[AthleteSimulation] Constructor called with athlete:', athleteData?.name, 'initialDistance:', this.initialDistance)
   }
 
   /**
@@ -48,10 +51,14 @@ export class AthleteSimulation {
       throw new Error('Simulation not initialized. Call initialize() first.')
     }
 
+    console.log('[AthleteSimulation] Starting simulation for', this.athleteData?.name, 'at distance:', this.initialDistance, 'km')
+
     this.startTime = Date.now()
     this.isRunning = true
     this.isPaused = false
-    this.pausedDistance = 0
+    this.pausedDistance = this.initialDistance
+
+    console.log('[AthleteSimulation] pausedDistance set to:', this.pausedDistance)
   }
 
   /**
@@ -82,11 +89,11 @@ export class AthleteSimulation {
     this.isRunning = false
     this.isPaused = false
     this.startTime = null
-    this.pausedDistance = 0
+    this.pausedDistance = this.initialDistance
   }
 
   /**
-   * Reset the simulation to the beginning
+   * Reset the simulation to the initial starting position
    */
   reset() {
     this.stop()
@@ -98,9 +105,11 @@ export class AthleteSimulation {
    */
   setSpeed(kmPerHour) {
     const currentState = this.getCurrentState()
+    console.log('[AthleteSimulation] setSpeed called:', kmPerHour, 'current distance:', currentState.distanceCovered)
     this.speed = kmPerHour
     this.pausedDistance = currentState.distanceCovered
     this.startTime = Date.now()
+    console.log('[AthleteSimulation] After setSpeed - pausedDistance:', this.pausedDistance)
   }
 
   /**
@@ -109,20 +118,21 @@ export class AthleteSimulation {
    */
   getCurrentState() {
     if (!this.isRunning) {
-      // Return starting position
-      const startCoord = this.routeCoordinates[0]
+      // Return position at initial distance
+      const position = getPositionAtDistance(this.routeCoordinates, this.initialDistance)
+      console.log('[AthleteSimulation] getCurrentState (not running) - initialDistance:', this.initialDistance, 'position:', position)
       return {
         position: {
-          lng: startCoord[0],
-          lat: startCoord[1],
-          elevation: startCoord[2]
+          lng: position.lng,
+          lat: position.lat,
+          elevation: position.elevation
         },
-        distanceCovered: 0,
-        progressPercent: 0,
+        distanceCovered: this.initialDistance,
+        progressPercent: (this.initialDistance / this.totalDistance) * 100,
         elapsedTime: 0,
         estimatedTotalTime: this.totalDistance / this.speed,
         speed: this.speed,
-        isFinished: false,
+        isFinished: this.initialDistance >= this.totalDistance,
         athlete: this.athleteData
       }
     }

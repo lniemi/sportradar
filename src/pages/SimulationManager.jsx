@@ -60,6 +60,14 @@ export default function SimulationManager() {
     const athlete = mockAthletes.find(a => a.id === athleteId);
     setSelectedAthlete(athlete);
     setSpeed(athlete.baseSpeed);
+
+    // If there's an active simulation, switch to the new athlete
+    if (activeSimulation === 'single_athlete') {
+      sendCommand('start_single_athlete', {
+        speed: athlete.baseSpeed,
+        athlete: athlete
+      });
+    }
   };
 
   const handleStart = () => {
@@ -105,17 +113,16 @@ export default function SimulationManager() {
               {/* Athlete Selection */}
               <div>
                 <label className="text-sm text-gray-400 block mb-2">
-                  Select Athlete
+                  Select Athlete {activeSimulation && '(switch athletes anytime)'}
                 </label>
                 <select
                   value={selectedAthlete.id}
                   onChange={handleAthleteChange}
-                  disabled={activeSimulation !== null}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                 >
                   {mockAthletes.map(athlete => (
                     <option key={athlete.id} value={athlete.id}>
-                      {athlete.name} (#{athlete.bib}) - {athlete.baseSpeed} km/h
+                      {athlete.name} (#{athlete.bib}) - {athlete.baseSpeed} km/h @ {athlete.initialDistance} km
                     </option>
                   ))}
                 </select>
