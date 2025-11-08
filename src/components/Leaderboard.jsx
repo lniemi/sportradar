@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './Leaderboard.css'
 
-export default function Leaderboard({ athletes = [] }) {
+export default function Leaderboard({ athletes = [], isAthleteInfoExpanded = false }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleLeaderboard = () => {
@@ -12,7 +12,7 @@ export default function Leaderboard({ athletes = [] }) {
     <>
       {/* Leaderboard Button */}
       <button
-        className="leaderboard-button"
+        className={`leaderboard-button ${isAthleteInfoExpanded ? 'shifted' : ''}`}
         onClick={toggleLeaderboard}
         aria-label="Toggle leaderboard"
       >
@@ -23,8 +23,12 @@ export default function Leaderboard({ athletes = [] }) {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+          <line x1="18" y1="20" x2="18" y2="10" />
+          <line x1="12" y1="20" x2="12" y2="4" />
+          <line x1="6" y1="20" x2="6" y2="14" />
         </svg>
       </button>
 

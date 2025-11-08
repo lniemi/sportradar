@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './AthleteInfoSheet.css'
 
-export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simulatedAthleteId = null }) {
+export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simulatedAthleteId = null, onExpandChange }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedAthlete, setSelectedAthlete] = useState(null)
   const [showSearchResults, setShowSearchResults] = useState(false)
@@ -32,6 +32,13 @@ export default function AthleteInfoSheet({ athletes = [], onSelectAthlete, simul
       }
     }
   }, [athletes])
+
+  // Notify parent when athlete info is expanded/collapsed
+  useEffect(() => {
+    if (onExpandChange) {
+      onExpandChange(!!selectedAthlete)
+    }
+  }, [selectedAthlete, onExpandChange])
 
   // Calculate current position based on distance ranking
   const getCurrentPosition = (athlete) => {

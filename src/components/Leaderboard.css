@@ -1,7 +1,8 @@
 .leaderboard-button {
   position: fixed;
-  top: 160px;
-  left: 20px;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 40;
   width: 48px;
   height: 48px;
@@ -18,30 +19,39 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
+.leaderboard-button.shifted {
+  bottom: 270px;
+}
+
 .leaderboard-button:hover {
   background: rgba(50, 50, 50, 0.95);
-  transform: scale(1.05);
+  transform: translateX(-50%) scale(1.05);
+}
+
+.leaderboard-button.shifted:hover {
+  transform: translateX(-50%) scale(1.05);
 }
 
 .leaderboard-panel {
   position: fixed;
-  top: 80px;
-  left: -400px;
-  width: 350px;
-  height: calc(100vh - 200px);
-  max-height: 600px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 90%;
+  max-width: 500px;
+  max-height: 60vh;
   background: rgba(30, 30, 30, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 0 12px 12px 0;
+  border-radius: 12px 12px 0 0;
   z-index: 35;
-  transition: left 0.3s ease;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
 }
 
 .leaderboard-panel.open {
-  left: 0;
+  transform: translateX(-50%) translateY(0);
 }
 
 .leaderboard-header {

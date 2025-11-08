@@ -16,6 +16,7 @@ function Home() {
   const [athletes, setAthletes] = useState([])
   const [currentAthleteState, setCurrentAthleteState] = useState(null)
   const [simulatedAthleteId, setSimulatedAthleteId] = useState(null)
+  const [isAthleteInfoExpanded, setIsAthleteInfoExpanded] = useState(false)
 
   // Listen for commands from SimulationManager window
   useEffect(() => {
@@ -183,11 +184,12 @@ function Home() {
       <Navbar />
       <Map ref={mapRef} />
       <RaceTimer startTime={raceStartTime} isRunning={isRaceRunning} />
-      <Leaderboard athletes={athletes} />
+      <Leaderboard athletes={athletes} isAthleteInfoExpanded={isAthleteInfoExpanded} />
       <AthleteInfoSheet
         athletes={athletes}
         onSelectAthlete={handleSelectAthlete}
         simulatedAthleteId={simulatedAthleteId}
+        onExpandChange={setIsAthleteInfoExpanded}
       />
     </div>
   )
