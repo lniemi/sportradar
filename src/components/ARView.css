@@ -1,0 +1,250 @@
+.ar-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.ar-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ar-header > * {
+  pointer-events: auto;
+}
+
+.view-info h3 {
+  color: white;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.position-info {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.close-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.control-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.athlete-count {
+  position: absolute;
+  top: 5rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.terrain-controls {
+  position: absolute;
+  top: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: white;
+  font-size: 0.75rem;
+  z-index: 10;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.terrain-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.terrain-controls input[type="range"] {
+  width: 120px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.terrain-controls input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.terrain-controls input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Compass indicator */
+.ar-compass {
+  position: absolute;
+  top: 5rem;
+  right: 1rem;
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.compass-arrow {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 20px solid #ff0000;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.compass-label {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .ar-header {
+    padding: 0.75rem;
+  }
+
+  .view-info h3 {
+    font-size: 1rem;
+  }
+
+  .position-info {
+    font-size: 0.75rem;
+  }
+
+  .control-hint {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .ar-compass {
+    width: 50px;
+    height: 50px;
+  }
+
+  .compass-arrow {
+    border-left-width: 6px;
+    border-right-width: 6px;
+    border-bottom-width: 15px;
+  }
+
+  .athlete-count {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .terrain-controls {
+    font-size: 0.65rem;
+    padding: 0.5rem 0.75rem;
+    gap: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .terrain-controls input[type="range"] {
+    width: 100px;
+  }
+}

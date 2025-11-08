@@ -5,6 +5,7 @@ import RaceTimer from '../components/RaceTimer'
 import Leaderboard from '../components/Leaderboard'
 import AthleteInfoSheet from '../components/AthleteInfoSheet'
 import ARButton from '../components/ARButton'
+import ARView from '../components/ARView'
 import StreetLevelView from '../components/StreetLevelView'
 import { createAthleteSimulation } from '../simulations/athleteSimulation'
 import { createMultiAthleteSimulation } from '../simulations/multiAthleteSimulation'
@@ -25,6 +26,7 @@ function Home() {
   const [isMultiAthleteMode, setIsMultiAthleteMode] = useState(false)
   const [selectedAthlete, setSelectedAthlete] = useState(null)
   const [isAthleteInfoExpanded, setIsAthleteInfoExpanded] = useState(false)
+  const [isARViewOpen, setIsARViewOpen] = useState(false)
   const [isStreetViewOpen, setIsStreetViewOpen] = useState(false)
   const [streetViewPosition, setStreetViewPosition] = useState(null)
   const [athletePositionsForVR, setAthletePositionsForVR] = useState([])
@@ -363,7 +365,7 @@ function Home() {
     }
 
     setStreetViewPosition(position)
-    setIsStreetViewOpen(true)
+    setIsARViewOpen(true)
   }
 
   return (
@@ -387,6 +389,12 @@ function Home() {
         simulatedAthleteId={simulatedAthleteId}
         onExpandChange={setIsAthleteInfoExpanded}
         onSelectionChange={setSelectedAthlete}
+      />
+      <ARView
+        isOpen={isARViewOpen}
+        onClose={() => setIsARViewOpen(false)}
+        athletePositions={athletePositionsForVR}
+        currentPosition={streetViewPosition}
       />
       <StreetLevelView
         isOpen={isStreetViewOpen}
