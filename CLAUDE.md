@@ -37,7 +37,9 @@ VITE_MAPBOX_ACCESS_TOKEN=your_token_here
 
 - **Entry point**: [src/main.jsx](src/main.jsx) - Sets up React, Router, and Mapbox CSS
 - **Router**: [src/App.jsx](src/App.jsx) - Defines application routes
-- **Pages**: Currently only [src/pages/Home.jsx](src/pages/Home.jsx) which renders the map with an overlay title
+- **Pages**:
+  - [src/pages/Home.jsx](src/pages/Home.jsx) - Main map view with race UI components (timer, leaderboard, athlete info)
+  - [src/pages/SimulationManager.jsx](src/pages/SimulationManager.jsx) - Control panel for athlete simulation (separate window)
 
 ### Map Component
 
@@ -63,6 +65,51 @@ The simulation system allows virtual athletes to traverse routes for testing and
 - `haversineDistance()` - Calculates distance between two geographic points
 - `calculateTotalDistance()` - Sums distances along an entire route
 - `getPositionAtDistance()` - Interpolates position at a specific distance along the route
+
+### UI Components
+
+The application features a comprehensive spectator interface with map overlays:
+
+**RaceTimer**: [src/components/RaceTimer.jsx](src/components/RaceTimer.jsx)
+- Live race timer with pulsing "LIVE" indicator
+- Displays elapsed time in HH:MM:SS or MM:SS format
+- Fixed position top-left, below navbar
+- Semi-transparent dark background with backdrop blur
+
+**Leaderboard**: [src/components/Leaderboard.jsx](src/components/Leaderboard.jsx)
+- Toggle button with star icon (fixed position below race timer)
+- Expandable side panel that slides in from the left
+- Shows ranked list of athletes sorted by distance covered
+- Displays athlete name, distance, and bib number
+- Top 3 positions have medal-colored position badges (gold, silver, bronze)
+- Scrollable list with custom scrollbar styling
+
+**AthleteInfoSheet**: [src/components/AthleteInfoSheet.jsx](src/components/AthleteInfoSheet.jsx)
+- Search bar positioned at bottom center of screen
+- Search functionality by athlete name or bib number
+- Dropdown results appear above search bar
+- Selected athlete info panel displays:
+  - Name and bib number
+  - Camera/video button for athlete view (future feature)
+  - Distance covered with location icon
+  - Current position/ranking in circular badge
+  - Speed (if available)
+  - Last checkpoint (if available)
+- Semi-transparent design maintains map visibility
+- Smooth slide-up animation when athlete selected
+
+All UI components use:
+- Fixed positioning to overlay the map
+- Semi-transparent backgrounds with backdrop blur
+- Consistent dark theme styling
+- Smooth transitions and animations
+- Responsive design patterns
+
+**Integration**: The Home page integrates these components and manages:
+- Mock athlete data (10 athletes with realistic names, bib numbers, distances)
+- Race timer state synchronized with simulation start/stop
+- Live updates of athlete positions via simulation state polling
+- Cross-window communication with SimulationManager via localStorage
 
 ### Data Files
 
