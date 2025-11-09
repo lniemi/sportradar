@@ -391,7 +391,7 @@ function RouteLine({ coordsToWorld, getHeightAt, mapView }) {
 }
 
 // Camera positioning component
-function CameraPositioner({ athletePositions, coordsToWorld, onCameraUpdate }) {
+function CameraPositioner({ athletePositions, coordsToWorld, onCameraUpdate, origin }) {
   const { camera } = useThree()
   const [isPositioned, setIsPositioned] = useState(false)
 
@@ -435,13 +435,25 @@ function CameraPositioner({ athletePositions, coordsToWorld, onCameraUpdate }) {
 
   // Update camera info every frame
   useFrame(() => {
-    if (!onCameraUpdate) return
+    if (!onCameraUpdate || !origin) return
+
+    // Convert camera world position back to lat/lng
+    const originCoords = UnitsUtils.datumsToSpherical(origin.lat, origin.lng)
+
+    // Camera position in world space relative to origin
+    const worldX = camera.position.x + originCoords.x
+    const worldZ = -camera.position.z + originCoords.y
+
+    // Convert back to lat/lng using sphericalToDatums
+    const geoCoords = UnitsUtils.sphericalToDatums(worldX, worldZ)
 
     onCameraUpdate({
       x: camera.position.x,
       y: camera.position.y,
       z: camera.position.z,
-      fov: camera.fov
+      fov: camera.fov,
+      lat: geoCoords.latitude,
+      lng: geoCoords.longitude
     })
   })
 
@@ -524,11 +536,12 @@ function ARScene({ athletePositions, viewerPosition, onCameraUpdate }) {
       />
 
       {/* Camera positioner */}
-      {terrainData?.coordsToWorld && (
+      {terrainData?.coordsToWorld && mapOrigin && (
         <CameraPositioner
           athletePositions={athletePositions}
           coordsToWorld={terrainData.coordsToWorld}
           onCameraUpdate={onCameraUpdate}
+          origin={mapOrigin}
         />
       )}
     </>
@@ -542,7 +555,9 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
     x: 0,
     y: 0,
     z: 0,
-    fov: 60
+    fov: 60,
+    lat: 0,
+    lng: 0
   })
 
   useEffect(() => {
@@ -557,6 +572,14 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
 
   const handleCameraUpdate = useCallback((info) => {
     setCameraInfo(info)
+    // Update viewer position with camera's geographic coordinates
+    if (info.lat !== undefined && info.lng !== undefined) {
+      setViewerPosition(prev => ({
+        ...prev,
+        lat: info.lat,
+        lng: info.lng
+      }))
+    }
   }, [])
 
   if (!isOpen) return null
@@ -610,9 +633,9 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
           <p>Height Mode: Enabled</p>
           <p>Satellite: MapBox</p>
           <p>LOD: Raycast</p>
-          {viewerPosition && (
+          {cameraInfo.lat !== 0 && cameraInfo.lng !== 0 && (
             <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', opacity: 0.8 }}>
-              Lat: {viewerPosition.lat.toFixed(5)} | Lng: {viewerPosition.lng.toFixed(5)}
+              Lat: {cameraInfo.lat.toFixed(5)} | Lng: {cameraInfo.lng.toFixed(5)}
             </p>
           )}
           <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
