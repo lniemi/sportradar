@@ -17,41 +17,6 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   return R * c
 }
 
-// Calculate geographic centroid of athletes
-function calculateAthleteCentroid(athletes) {
-  if (!athletes || athletes.length === 0) return null
-
-  let sumLat = 0
-  let sumLng = 0
-
-  athletes.forEach(athlete => {
-    sumLat += athlete.lat
-    sumLng += athlete.lng
-  })
-
-  return {
-    lat: sumLat / athletes.length,
-    lng: sumLng / athletes.length
-  }
-}
-
-// Calculate bounding box diagonal distance for athletes
-function calculateAthleteSpread(athletes) {
-  if (!athletes || athletes.length === 0) return 0
-
-  let minLat = Infinity, maxLat = -Infinity
-  let minLng = Infinity, maxLng = -Infinity
-
-  athletes.forEach(athlete => {
-    minLat = Math.min(minLat, athlete.lat)
-    maxLat = Math.max(maxLat, athlete.lat)
-    minLng = Math.min(minLng, athlete.lng)
-    maxLng = Math.max(maxLng, athlete.lng)
-  })
-
-  // Calculate diagonal distance
-  return haversineDistance(minLat, minLng, maxLat, maxLng)
-}
 
 // Terrain component using Geo-Three with height data
 function Terrain({ origin, onReady }) {
@@ -391,51 +356,23 @@ function RouteLine({ coordsToWorld, getHeightAt, mapView }) {
 }
 
 // Camera positioning component
-function CameraPositioner({ athletePositions, coordsToWorld, onCameraUpdate, origin }) {
+function CameraPositioner({ onCameraUpdate, origin, controlsRef }) {
   const { camera } = useThree()
-  const [isPositioned, setIsPositioned] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
 
+  // Set initial camera target to origin
   useEffect(() => {
-    if (!coordsToWorld || !athletePositions || athletePositions.length === 0 || isPositioned) {
-      return
-    }
+    if (!controlsRef?.current || isInitialized) return
 
-    // Calculate centroid
-    const centroid = calculateAthleteCentroid(athletePositions)
-    if (!centroid) return
-
-    // Calculate spread to determine camera distance
-    const spread = calculateAthleteSpread(athletePositions)
-
-    // Convert centroid to world coordinates
-    const centerPos = coordsToWorld(centroid.lat, centroid.lng)
-
-    // Calculate camera position for good overview
-    const cameraDistance = Math.max(spread * 1.5, 5000) // Minimum 5km distance
-    const cameraHeight = cameraDistance * 0.7
-
-    // Position camera at an angle for better 3D view
-    camera.position.set(
-      centerPos.x,
-      cameraHeight,
-      centerPos.z + cameraDistance
-    )
-
-    // Look at the centroid
-    camera.lookAt(centerPos.x, 0, centerPos.z)
-
-    setIsPositioned(true)
-    console.log('Camera positioned:', {
-      centroid,
-      spread: (spread / 1000).toFixed(2) + ' km',
-      height: (cameraHeight / 1000).toFixed(2) + ' km',
-      distance: (cameraDistance / 1000).toFixed(2) + ' km'
-    })
-  }, [camera, athletePositions, coordsToWorld, isPositioned])
+    // Point camera at the origin (0, 0, 0 in world space)
+    controlsRef.current.target.set(0, 0, 0)
+    controlsRef.current.update()
+    setIsInitialized(true)
+  }, [controlsRef, isInitialized])
 
   // Update camera info every frame
   useFrame(() => {
-    if (!onCameraUpdate || !origin) return
+    if (!onCameraUpdate || !origin || !controlsRef?.current) return
 
     // Convert camera world position back to lat/lng
     const originCoords = UnitsUtils.datumsToSpherical(origin.lat, origin.lng)
@@ -447,13 +384,24 @@ function CameraPositioner({ athletePositions, coordsToWorld, onCameraUpdate, ori
     // Convert back to lat/lng using sphericalToDatums
     const geoCoords = UnitsUtils.sphericalToDatums(worldX, worldZ)
 
+    // Convert target position back to lat/lng
+    const target = controlsRef.current.target
+    const targetWorldX = target.x + originCoords.x
+    const targetWorldZ = -target.z + originCoords.y
+    const targetGeoCoords = UnitsUtils.sphericalToDatums(targetWorldX, targetWorldZ)
+
     onCameraUpdate({
       x: camera.position.x,
       y: camera.position.y,
       z: camera.position.z,
       fov: camera.fov,
       lat: geoCoords.latitude,
-      lng: geoCoords.longitude
+      lng: geoCoords.longitude,
+      targetX: target.x,
+      targetY: target.y,
+      targetZ: target.z,
+      targetLat: targetGeoCoords.latitude,
+      targetLng: targetGeoCoords.longitude
     })
   })
 
@@ -463,11 +411,10 @@ function CameraPositioner({ athletePositions, coordsToWorld, onCameraUpdate, ori
 // Main AR Scene component
 function ARScene({ athletePositions, viewerPosition, onCameraUpdate }) {
   const [terrainData, setTerrainData] = useState(null)
+  const controlsRef = useRef(null)
   const [mapOrigin] = useState(() => {
-    // Calculate origin once on mount
-    return athletePositions && athletePositions.length > 0
-      ? calculateAthleteCentroid(athletePositions)
-      : viewerPosition
+    // Use fixed origin for consistent camera positioning
+    return { lat: 45.66677, lng: 7.05964 }
   })
 
   const handleTerrainReady = useCallback((data) => {
@@ -528,6 +475,7 @@ function ARScene({ athletePositions, viewerPosition, onCameraUpdate }) {
 
       {/* Orbit controls for camera manipulation */}
       <OrbitControls
+        ref={controlsRef}
         enableDamping
         dampingFactor={0.05}
         minDistance={1000}
@@ -536,12 +484,11 @@ function ARScene({ athletePositions, viewerPosition, onCameraUpdate }) {
       />
 
       {/* Camera positioner */}
-      {terrainData?.coordsToWorld && mapOrigin && (
+      {mapOrigin && (
         <CameraPositioner
-          athletePositions={athletePositions}
-          coordsToWorld={terrainData.coordsToWorld}
           onCameraUpdate={onCameraUpdate}
           origin={mapOrigin}
+          controlsRef={controlsRef}
         />
       )}
     </>
@@ -557,7 +504,12 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
     z: 0,
     fov: 60,
     lat: 0,
-    lng: 0
+    lng: 0,
+    targetX: 0,
+    targetY: 0,
+    targetZ: 0,
+    targetLat: 0,
+    targetLng: 0
   })
 
   useEffect(() => {
@@ -608,7 +560,7 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
 
       <Canvas
         camera={{
-          position: [0, 10000, 10000],
+          position: [8723.3, 2643.2, -2766.9],
           fov: 60,
           near: 1,
           far: 100000
@@ -647,6 +599,17 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
               Height: {(cameraInfo.y / 1000).toFixed(2)} km | FOV: {cameraInfo.fov.toFixed(0)}°
             </p>
           </div>
+          {cameraInfo.targetLat !== undefined && cameraInfo.targetLng !== undefined && (
+            <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+              <p style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>Camera Target</p>
+              <p style={{ fontSize: '0.7rem', opacity: 0.9 }}>
+                X: {cameraInfo.targetX?.toFixed(1)} | Y: {cameraInfo.targetY?.toFixed(1)} | Z: {cameraInfo.targetZ?.toFixed(1)}
+              </p>
+              <p style={{ fontSize: '0.7rem', opacity: 0.9, marginTop: '0.25rem' }}>
+                Lat: {cameraInfo.targetLat.toFixed(5)} | Lng: {cameraInfo.targetLng.toFixed(5)}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
