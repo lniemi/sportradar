@@ -17,68 +17,6 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   return R * c
 }
 
-// Calculate optimal spectator position relative to route
-function findSpectatorPosition(athletePositions, routeCoords) {
-  if (!athletePositions || athletePositions.length === 0 || !routeCoords) {
-    return null
-  }
-
-  // Find centroid of athletes
-  const centroid = calculateAthleteCentroid(athletePositions)
-
-  // Find closest route points to centroid
-  let closestDist = Infinity
-  let closestIndex = 0
-
-  for (let i = 0; i < routeCoords.length; i++) {
-    const coord = routeCoords[i]
-    const dist = haversineDistance(centroid.lat, centroid.lng, coord[1], coord[0])
-    if (dist < closestDist) {
-      closestDist = dist
-      closestIndex = i
-    }
-  }
-
-  // Get route point and adjacent points for direction
-  const routePoint = routeCoords[closestIndex]
-  const prevPoint = routeCoords[Math.max(0, closestIndex - 1)]
-  const nextPoint = routeCoords[Math.min(routeCoords.length - 1, closestIndex + 1)]
-
-  // Calculate route direction vector
-  const routeDir = {
-    lat: nextPoint[1] - prevPoint[1],
-    lng: nextPoint[0] - prevPoint[0]
-  }
-
-  // Normalize direction
-  const dirLength = Math.sqrt(routeDir.lat * routeDir.lat + routeDir.lng * routeDir.lng)
-  if (dirLength > 0) {
-    routeDir.lat /= dirLength
-    routeDir.lng /= dirLength
-  }
-
-  // Calculate perpendicular vector (rotate 90 degrees)
-  const perpDir = {
-    lat: -routeDir.lng,
-    lng: routeDir.lat
-  }
-
-  // Offset distance in degrees (approximately 200m)
-  const offsetDegrees = 200 / 111000 // 1 degree ≈ 111km
-
-  // Calculate spectator position
-  const spectatorPos = {
-    lat: routePoint[1] + perpDir.lat * offsetDegrees,
-    lng: routePoint[0] + perpDir.lng * offsetDegrees,
-    elevation: routePoint[2] || 0, // Use route elevation
-    targetLat: routePoint[1],
-    targetLng: routePoint[0],
-    targetElevation: routePoint[2] || 0
-  }
-
-  return spectatorPos
-}
-
 // Calculate geographic centroid of athletes
 function calculateAthleteCentroid(athletes) {
   if (!athletes || athletes.length === 0) return null
@@ -97,6 +35,23 @@ function calculateAthleteCentroid(athletes) {
   }
 }
 
+// Calculate bounding box diagonal distance for athletes
+function calculateAthleteSpread(athletes) {
+  if (!athletes || athletes.length === 0) return 0
+
+  let minLat = Infinity, maxLat = -Infinity
+  let minLng = Infinity, maxLng = -Infinity
+
+  athletes.forEach(athlete => {
+    minLat = Math.min(minLat, athlete.lat)
+    maxLat = Math.max(maxLat, athlete.lat)
+    minLng = Math.min(minLng, athlete.lng)
+    maxLng = Math.max(maxLng, athlete.lng)
+  })
+
+  // Calculate diagonal distance
+  return haversineDistance(minLat, minLng, maxLat, maxLng)
+}
 
 // Terrain component using Geo-Three with height data
 function Terrain({ origin, onReady }) {
@@ -435,51 +390,48 @@ function RouteLine({ coordsToWorld, getHeightAt, mapView }) {
   )
 }
 
-// Camera positioning component for spectator view
-function CameraPositioner({ athletePositions, coordsToWorld, routeCoords }) {
+// Camera positioning component
+function CameraPositioner({ athletePositions, coordsToWorld }) {
   const { camera } = useThree()
   const [isPositioned, setIsPositioned] = useState(false)
 
   useEffect(() => {
-    if (!coordsToWorld || !athletePositions || athletePositions.length === 0 || !routeCoords || isPositioned) {
+    if (!coordsToWorld || !athletePositions || athletePositions.length === 0 || isPositioned) {
       return
     }
 
-    // Find optimal spectator position
-    const spectatorPos = findSpectatorPosition(athletePositions, routeCoords)
-    if (!spectatorPos) return
+    // Calculate centroid
+    const centroid = calculateAthleteCentroid(athletePositions)
+    if (!centroid) return
 
-    // Convert spectator position to world coordinates
-    const worldPos = coordsToWorld(spectatorPos.lat, spectatorPos.lng)
-    const targetPos = coordsToWorld(spectatorPos.targetLat, spectatorPos.targetLng)
+    // Calculate spread to determine camera distance
+    const spread = calculateAthleteSpread(athletePositions)
 
-    // Set camera at spectator eye height (4m above terrain)
-    const eyeHeight = 4 // 4 meters tall spectator
-    const cameraElevation = spectatorPos.elevation + eyeHeight
+    // Convert centroid to world coordinates
+    const centerPos = coordsToWorld(centroid.lat, centroid.lng)
 
-    // Position camera at spectator location
+    // Calculate camera position for good overview
+    const cameraDistance = Math.max(spread * 1.5, 5000) // Minimum 5km distance
+    const cameraHeight = cameraDistance * 0.7
+
+    // Position camera at an angle for better 3D view
     camera.position.set(
-      worldPos.x,
-      cameraElevation,
-      worldPos.z
+      centerPos.x,
+      cameraHeight,
+      centerPos.z + cameraDistance
     )
 
-    // Look at the route where athletes are
-    const lookAtElevation = spectatorPos.targetElevation + 50 // Look slightly above ground
-    camera.lookAt(targetPos.x, lookAtElevation, targetPos.z)
-
-    // Adjust field of view for realistic perspective
-    camera.fov = 75 // More natural FOV for ground-level view
-    camera.updateProjectionMatrix()
+    // Look at the centroid
+    camera.lookAt(centerPos.x, 0, centerPos.z)
 
     setIsPositioned(true)
-    console.log('Spectator camera positioned:', {
-      position: { lat: spectatorPos.lat.toFixed(5), lng: spectatorPos.lng.toFixed(5) },
-      elevation: cameraElevation.toFixed(1) + 'm',
-      lookingAt: { lat: spectatorPos.targetLat.toFixed(5), lng: spectatorPos.targetLng.toFixed(5) },
-      distance: '200m from route'
+    console.log('Camera positioned:', {
+      centroid,
+      spread: (spread / 1000).toFixed(2) + ' km',
+      height: (cameraHeight / 1000).toFixed(2) + ' km',
+      distance: (cameraDistance / 1000).toFixed(2) + ' km'
     })
-  }, [camera, athletePositions, coordsToWorld, routeCoords, isPositioned])
+  }, [camera, athletePositions, coordsToWorld, isPositioned])
 
   return null
 }
@@ -487,7 +439,6 @@ function CameraPositioner({ athletePositions, coordsToWorld, routeCoords }) {
 // Main AR Scene component
 function ARScene({ athletePositions, viewerPosition }) {
   const [terrainData, setTerrainData] = useState(null)
-  const [routeCoords, setRouteCoords] = useState(null)
   const [mapOrigin] = useState(() => {
     // Calculate origin once on mount
     return athletePositions && athletePositions.length > 0
@@ -498,21 +449,6 @@ function ARScene({ athletePositions, viewerPosition }) {
   const handleTerrainReady = useCallback((data) => {
     setTerrainData(data)
     console.log('Terrain ready with height mode and raycasting support')
-  }, [])
-
-  // Load route coordinates for camera positioning
-  useEffect(() => {
-    fetch('/TOR330.geojson')
-      .then(response => response.json())
-      .then(data => {
-        if (data.features && data.features[0]) {
-          const coords = data.features[0].geometry.coordinates[0]
-          // Sample for camera positioning (every 10th point)
-          const sampledCoords = coords.filter((_, i) => i % 10 === 0)
-          setRouteCoords(sampledCoords)
-        }
-      })
-      .catch(err => console.error('Failed to load route for camera:', err))
   }, [])
 
   // Store mapView reference
@@ -566,25 +502,20 @@ function ARScene({ athletePositions, viewerPosition }) {
         />
       ))}
 
-      {/* Orbit controls for camera manipulation - configured for ground-level view */}
+      {/* Orbit controls for camera manipulation */}
       <OrbitControls
         enableDamping
         dampingFactor={0.05}
-        minDistance={10}           // Allow very close viewing (10m)
-        maxDistance={2000}         // Limit max distance for spectator view (2km)
-        maxPolarAngle={Math.PI * 0.85}  // Allow looking up slightly
-        minPolarAngle={Math.PI * 0.15}  // Prevent looking too far down
-        enablePan={true}           // Allow panning around
-        panSpeed={0.8}            // Moderate pan speed
-        rotateSpeed={0.5}         // Slower rotation for more control
+        minDistance={1000}
+        maxDistance={50000}
+        maxPolarAngle={Math.PI / 2}
       />
 
       {/* Camera positioner */}
-      {terrainData?.coordsToWorld && routeCoords && (
+      {terrainData?.coordsToWorld && (
         <CameraPositioner
           athletePositions={athletePositions}
           coordsToWorld={terrainData.coordsToWorld}
-          routeCoords={routeCoords}
         />
       )}
     </>
@@ -631,10 +562,10 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
 
       <Canvas
         camera={{
-          position: [0, 100, 500],  // Start closer to ground level
-          fov: 75,  // Wider FOV for more natural ground-level perspective
-          near: 0.5,  // Allow very close rendering
-          far: 50000  // Still allow far distance for terrain
+          position: [0, 10000, 10000],
+          fov: 60,
+          near: 1,
+          far: 100000
         }}
         gl={{
           antialias: true,
@@ -651,19 +582,15 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
       {/* UI Overlay */}
       <div className="ar-controls">
         <div className="ar-info">
-          <h3>Spectator View</h3>
-          <p>Viewing Distance: ~200m</p>
-          <p>Eye Height: 4m</p>
-          <p>Mode: Ground Level</p>
-          {positions.length > 0 && (
+          <h3>3D Terrain View</h3>
+          <p>Height Mode: Enabled</p>
+          <p>Satellite: MapBox</p>
+          <p>LOD: Raycast</p>
+          {viewerPosition && (
             <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', opacity: 0.8 }}>
-              Tracking {positions.length} athlete{positions.length !== 1 ? 's' : ''}
+              Lat: {viewerPosition.lat.toFixed(5)} | Lng: {viewerPosition.lng.toFixed(5)}
             </p>
           )}
-          <div style={{ fontSize: '0.75rem', marginTop: '0.5rem', opacity: 0.6 }}>
-            <p>Use mouse to look around</p>
-            <p>Scroll to zoom in/out</p>
-          </div>
         </div>
       </div>
     </div>
