@@ -310,9 +310,9 @@ function AthleteMarker({ athlete, coordsToWorld, getHeightAt, viewerPosition }) 
 }
 
 // Route line component to show the race path
-function RouteLine({ coordsToWorld, getHeightAt }) {
+function RouteLine({ coordsToWorld, getHeightAt, mapView }) {
   const [routeCoords, setRouteCoords] = useState(null)
-  const lineRef = useRef()
+  const meshRef = useRef()
 
   // Load route GeoJSON once
   useEffect(() => {
@@ -332,54 +332,69 @@ function RouteLine({ coordsToWorld, getHeightAt }) {
       .catch(err => console.error('Failed to load route:', err))
   }, [coordsToWorld, routeCoords])
 
-  // Update route positions using terrain raycasting every frame
+  // Update route positions - use GeoJSON elevation data
   useFrame(() => {
-    if (!routeCoords || !coordsToWorld || !getHeightAt || !lineRef.current) return
+    if (!routeCoords || !coordsToWorld || !meshRef.current || !mapView) return
 
-    // Convert route coordinates to 3D world positions with terrain height
+    // Convert route coordinates to 3D world positions using elevation from GeoJSON
     const points = []
+    let maxHeight = -Infinity
+    let minHeight = Infinity
 
     for (const coord of routeCoords) {
       const pos = coordsToWorld(coord[1], coord[0]) // [lng, lat] -> [lat, lng]
-      const terrainHeight = getHeightAt(coord[1], coord[0])
 
-      // Offset significantly above terrain to ensure visibility (200m above)
-      points.push(new THREE.Vector3(pos.x, terrainHeight + 200, pos.z))
+      // Use elevation from GeoJSON [lng, lat, elevation]
+      // The elevation in the GeoJSON is in meters above sea level
+      const elevation = coord[2] || 0
+
+      maxHeight = Math.max(maxHeight, elevation)
+      minHeight = Math.min(minHeight, elevation)
+
+      // Use the GeoJSON elevation directly with a small offset for visibility
+      points.push(new THREE.Vector3(pos.x, elevation + 10, pos.z))
     }
 
-    // Continuously update geometry as terrain tiles load
-    const positions = new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))
-    lineRef.current.geometry.setAttribute(
-      'position',
-      new THREE.BufferAttribute(positions, 3)
-    )
-    lineRef.current.geometry.attributes.position.needsUpdate = true
+    // Debug output (once every ~60 frames)
+    if (Math.random() < 0.016) {
+      console.log(`Route using GeoJSON elevation | Min: ${minHeight.toFixed(0)}m | Max: ${maxHeight.toFixed(0)}m | Points: ${points.length}`)
+    }
+
+    // Create a tube geometry from points for better visibility
+    if (points.length > 1) {
+      try {
+        const curve = new THREE.CatmullRomCurve3(points)
+        const tubeGeometry = new THREE.TubeGeometry(curve, Math.min(points.length * 2, 1000), 20, 8, false)
+
+        if (meshRef.current.geometry) {
+          meshRef.current.geometry.dispose()
+        }
+        meshRef.current.geometry = tubeGeometry
+      } catch (err) {
+        console.error('Failed to create tube geometry:', err)
+      }
+    }
   })
 
   if (!routeCoords) return null
 
-  // Create initial geometry with placeholder positions
-  const initialPositions = new Float32Array(routeCoords.length * 3)
+  // Create valid initial geometry with two points
+  const initialCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0, 1, 0)
+  ])
 
   return (
-    <line ref={lineRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={routeCoords.length}
-          array={initialPositions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <lineBasicMaterial
+    <mesh ref={meshRef}>
+      <tubeGeometry args={[initialCurve, 10, 15, 8, false]} />
+      <meshStandardMaterial
         color="#FFFF00"
-        linewidth={3}
-        transparent
-        opacity={0.9}
-        depthTest={false}
-        depthWrite={false}
+        emissive="#FFAA00"
+        emissiveIntensity={0.3}
+        roughness={0.5}
+        metalness={0.2}
       />
-    </line>
+    </mesh>
   )
 }
 
@@ -444,6 +459,15 @@ function ARScene({ athletePositions, viewerPosition }) {
     console.log('Terrain ready with height mode and raycasting support')
   }, [])
 
+  // Store mapView reference
+  const mapViewRef = useRef(null)
+
+  useEffect(() => {
+    if (terrainData?.mapView) {
+      mapViewRef.current = terrainData.mapView
+    }
+  }, [terrainData])
+
   return (
     <>
       {/* Lighting */}
@@ -468,10 +492,11 @@ function ARScene({ athletePositions, viewerPosition }) {
       )}
 
       {/* Route line */}
-      {terrainData?.coordsToWorld && (
+      {terrainData?.coordsToWorld && terrainData?.mapView && (
         <RouteLine
           coordsToWorld={terrainData.coordsToWorld}
           getHeightAt={terrainData.getHeightAt}
+          mapView={terrainData.mapView}
         />
       )}
 
