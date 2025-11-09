@@ -293,12 +293,13 @@ The root directory contains source files including `TOR330-CERT-2025.gpx` (origi
 - Dispose old geometry before creating new to prevent memory leaks
 
 **Athlete Marker Positioning:**
-- Athlete markers use raycasting for dynamic positioning (works for point objects)
-- Raycast from high above (e.g., y: 10000) downward to get terrain elevation
-- Use `useFrame()` to continuously raycast until terrain tiles are loaded
-- Only position markers when `terrainHeight > 0` (successful raycast)
-- Offset markers above terrain (+100m) to ensure visibility
-- Markers are billboarded (always face camera) for better visibility
+- **IMPORTANT**: Like routes, do NOT use raycasting for athlete positioning - use elevation data directly
+- Athletes have elevation data in their state from `getPositionAtDistance()` which interpolates from route GeoJSON
+- Home.jsx passes elevation to ARView in `athletePositions` array: `{ id, name, position, lng, lat, elevation }`
+- AthleteMarker uses `athlete.elevation` directly: `new THREE.Vector3(pos.x, elevation + 100, pos.z)`
+- Offset markers above terrain (+100m) to ensure visibility above route
+- Markers are billboarded (always face camera) for better visibility using `meshRef.quaternion.copy(camera.quaternion)`
+- Position updates every frame via `useFrame()` to track moving athletes
 
 **Performance:**
 - Use `LODRaycast` for efficient level-of-detail management
