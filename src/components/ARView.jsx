@@ -478,9 +478,10 @@ function ARScene({ athletePositions, viewerPosition, onCameraUpdate }) {
         ref={controlsRef}
         enableDamping
         dampingFactor={0.05}
-        minDistance={1000}
-        maxDistance={50000}
         maxPolarAngle={Math.PI / 2}
+        zoomSpeed={1.5}
+        enableZoom={true}
+        screenSpacePanning={false}
       />
 
       {/* Camera positioner */}
