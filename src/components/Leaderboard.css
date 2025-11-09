@@ -18,7 +18,7 @@
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   /* DEBUG */
-  outline: 3px solid blue;
+  /* outline: 3px solid blue; */
 }
 
 .leaderboard-button.shifted {
@@ -55,7 +55,7 @@
   display: flex;
   flex-direction: column;
   /* DEBUG */
-  outline: 3px solid orange;
+  /* outline: 3px solid orange; */
 }
 
 .leaderboard-panel.open {

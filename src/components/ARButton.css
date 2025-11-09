@@ -18,7 +18,7 @@
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   /* DEBUG */
-  outline: 3px solid cyan;
+  /* outline: 3px solid cyan; */
 }
 
 .ar-button.shifted {
