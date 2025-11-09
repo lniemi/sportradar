@@ -309,7 +309,8 @@ function Home() {
           name: state.athlete?.name,
           position: index + 1, // Position based on order in allStates
           lng: state.position.lng,
-          lat: state.position.lat
+          lat: state.position.lat,
+          elevation: state.position.elevation
         }))
 
         // Update all markers on map

@@ -196,12 +196,11 @@ function Terrain({ origin, onReady }) {
 }
 
 // Athlete marker component rendered in 3D space
-function AthleteMarker({ athlete, coordsToWorld, getHeightAt, viewerPosition }) {
+function AthleteMarker({ athlete, coordsToWorld, viewerPosition }) {
   const meshRef = useRef()
   const groupRef = useRef()
   const [worldPos, setWorldPos] = useState(null)
   const [distance, setDistance] = useState(0)
-  const hasPositionedRef = useRef(false)
 
   useEffect(() => {
     if (!coordsToWorld || !athlete || !viewerPosition) return
@@ -214,36 +213,29 @@ function AthleteMarker({ athlete, coordsToWorld, getHeightAt, viewerPosition }) 
       athlete.lng
     )
     setDistance(dist)
-  }, [athlete, viewerPosition])
+  }, [athlete, viewerPosition, coordsToWorld])
 
-  // Update position every frame with terrain raycasting
+  // Update position every frame using elevation data from athlete state
   useFrame(() => {
-    if (!coordsToWorld || !athlete || !getHeightAt) return
+    if (!coordsToWorld || !athlete) return
 
     // Convert GPS to WebGL coordinates
     const pos = coordsToWorld(athlete.lat, athlete.lng)
 
-    // Get terrain height at position
-    const terrainHeight = getHeightAt(athlete.lat, athlete.lng)
+    // Use elevation from athlete data (same as route - from GeoJSON)
+    const elevation = athlete.elevation || 0
 
-    // Elevation offset to put marker above terrain
+    // Elevation offset to put marker above terrain for visibility
     const markerHeight = 100 // 100 meters above terrain
 
     const newPos = {
       x: pos.x,
-      y: terrainHeight + markerHeight,
+      y: elevation + markerHeight,
       z: pos.z
     }
 
-    // Only update once we have a valid terrain height
-    if (!hasPositionedRef.current && terrainHeight > 0) {
-      setWorldPos(newPos)
-      hasPositionedRef.current = true
-      console.log(`Athlete ${athlete.name} positioned at height ${terrainHeight}`)
-    } else if (hasPositionedRef.current && terrainHeight > 0) {
-      // Update position if terrain height changed
-      setWorldPos(newPos)
-    }
+    // Update position
+    setWorldPos(newPos)
   })
 
   // Billboard effect - keep marker facing camera
@@ -506,7 +498,6 @@ function ARScene({ athletePositions, viewerPosition }) {
           key={athlete.id}
           athlete={athlete}
           coordsToWorld={terrainData.coordsToWorld}
-          getHeightAt={terrainData.getHeightAt}
           viewerPosition={viewerPosition}
         />
       ))}
