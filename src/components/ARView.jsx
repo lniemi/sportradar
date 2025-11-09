@@ -201,24 +201,10 @@ function AthleteMarker({ athlete, coordsToWorld, getHeightAt, viewerPosition }) 
   const groupRef = useRef()
   const [worldPos, setWorldPos] = useState(null)
   const [distance, setDistance] = useState(0)
+  const hasPositionedRef = useRef(false)
 
   useEffect(() => {
     if (!coordsToWorld || !athlete || !viewerPosition) return
-
-    // Convert GPS to WebGL coordinates
-    const pos = coordsToWorld(athlete.lat, athlete.lng)
-
-    // Get terrain height at position (will raycast once terrain is loaded)
-    const terrainHeight = getHeightAt ? getHeightAt(athlete.lat, athlete.lng) : 0
-
-    // Elevation offset to put marker above terrain
-    const markerHeight = 100 // 100 meters above terrain
-
-    setWorldPos({
-      x: pos.x,
-      y: terrainHeight + markerHeight,
-      z: pos.z
-    })
 
     // Calculate distance from viewer
     const dist = haversineDistance(
@@ -228,7 +214,37 @@ function AthleteMarker({ athlete, coordsToWorld, getHeightAt, viewerPosition }) 
       athlete.lng
     )
     setDistance(dist)
-  }, [athlete, coordsToWorld, getHeightAt, viewerPosition])
+  }, [athlete, viewerPosition])
+
+  // Update position every frame with terrain raycasting
+  useFrame(() => {
+    if (!coordsToWorld || !athlete || !getHeightAt) return
+
+    // Convert GPS to WebGL coordinates
+    const pos = coordsToWorld(athlete.lat, athlete.lng)
+
+    // Get terrain height at position
+    const terrainHeight = getHeightAt(athlete.lat, athlete.lng)
+
+    // Elevation offset to put marker above terrain
+    const markerHeight = 100 // 100 meters above terrain
+
+    const newPos = {
+      x: pos.x,
+      y: terrainHeight + markerHeight,
+      z: pos.z
+    }
+
+    // Only update once we have a valid terrain height
+    if (!hasPositionedRef.current && terrainHeight > 0) {
+      setWorldPos(newPos)
+      hasPositionedRef.current = true
+      console.log(`Athlete ${athlete.name} positioned at height ${terrainHeight}`)
+    } else if (hasPositionedRef.current && terrainHeight > 0) {
+      // Update position if terrain height changed
+      setWorldPos(newPos)
+    }
+  })
 
   // Billboard effect - keep marker facing camera
   useFrame(({ camera }) => {
@@ -295,43 +311,73 @@ function AthleteMarker({ athlete, coordsToWorld, getHeightAt, viewerPosition }) 
 
 // Route line component to show the race path
 function RouteLine({ coordsToWorld, getHeightAt }) {
-  const [routePoints, setRoutePoints] = useState([])
+  const [routeCoords, setRouteCoords] = useState(null)
+  const lineRef = useRef()
+  const hasPositionedRef = useRef(false)
 
+  // Load route GeoJSON once
   useEffect(() => {
-    if (!coordsToWorld) return
+    if (!coordsToWorld || routeCoords) return
 
-    // Load TOR330 route
     fetch('/TOR330.geojson')
       .then(response => response.json())
       .then(data => {
         if (data.features && data.features[0]) {
           const coords = data.features[0].geometry.coordinates[0]
-
           // Sample points to reduce complexity (every 10th point)
           const sampledCoords = coords.filter((_, i) => i % 10 === 0)
-
-          // Convert route coordinates to 3D world positions
-          const points = sampledCoords.map(coord => {
-            const pos = coordsToWorld(coord[1], coord[0]) // [lng, lat] -> [lat, lng]
-            const terrainHeight = getHeightAt ? getHeightAt(coord[1], coord[0]) : 0
-            // Offset slightly above terrain to avoid z-fighting
-            return new THREE.Vector3(pos.x, terrainHeight + 5, pos.z)
-          })
-          setRoutePoints(points)
+          setRouteCoords(sampledCoords)
+          console.log(`Route loaded with ${sampledCoords.length} points`)
         }
       })
       .catch(err => console.error('Failed to load route:', err))
-  }, [coordsToWorld, getHeightAt])
+  }, [coordsToWorld, routeCoords])
 
-  if (routePoints.length === 0) return null
+  // Update route positions using terrain raycasting every frame
+  useFrame(() => {
+    if (!routeCoords || !coordsToWorld || !getHeightAt || !lineRef.current) return
+
+    // Convert route coordinates to 3D world positions with terrain height
+    const points = []
+    let hasValidHeight = false
+
+    for (const coord of routeCoords) {
+      const pos = coordsToWorld(coord[1], coord[0]) // [lng, lat] -> [lat, lng]
+      const terrainHeight = getHeightAt(coord[1], coord[0])
+
+      if (terrainHeight > 0) {
+        hasValidHeight = true
+      }
+
+      // Offset above terrain to be visible (100m above)
+      points.push(new THREE.Vector3(pos.x, terrainHeight + 100, pos.z))
+    }
+
+    // Only update geometry if we have valid heights and haven't positioned yet
+    if (hasValidHeight && !hasPositionedRef.current) {
+      const positions = new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))
+      lineRef.current.geometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(positions, 3)
+      )
+      lineRef.current.geometry.attributes.position.needsUpdate = true
+      hasPositionedRef.current = true
+      console.log('Route positioned on 3D terrain with valid heights')
+    }
+  })
+
+  if (!routeCoords) return null
+
+  // Create initial geometry with placeholder positions
+  const initialPositions = new Float32Array(routeCoords.length * 3)
 
   return (
-    <line>
+    <line ref={lineRef}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={routePoints.length}
-          array={new Float32Array(routePoints.flatMap(p => [p.x, p.y, p.z]))}
+          count={routeCoords.length}
+          array={initialPositions}
           itemSize={3}
         />
       </bufferGeometry>

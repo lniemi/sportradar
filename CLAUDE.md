@@ -254,6 +254,41 @@ Mock athlete data is defined in [src/simulations/mockAthletes.js](src/simulation
 
 The root directory contains source files including `TOR330-CERT-2025.gpx` (original GPX route file).
 
+### 3D Terrain View (ARView)
+
+[src/components/ARView.jsx](src/components/ARView.jsx) provides a 3D terrain visualization using geo-three library:
+
+**Geo-Three Integration:**
+- Uses `geo-three` library for 3D terrain rendering with Mapbox data
+- **Critical**: Use `MapView.HEIGHT` mode to enable 3D terrain elevation (uses `MapHeightNode`)
+- MapBox providers configuration:
+  - **Satellite imagery**: `MapBoxProvider(token, 'mapbox/satellite-v9', MapBoxProvider.STYLE, 'png', false)`
+  - **Terrain height data**: `MapBoxProvider(token, 'mapbox.terrain-rgb', MapBoxProvider.MAP_ID, 'pngraw', false)`
+- MapView modes available:
+  - `MapView.PLANAR` - Flat 2D plane (uses `MapPlaneNode`)
+  - `MapView.HEIGHT` - **3D terrain with elevation** (uses `MapHeightNode`) ← Use this for terrain
+  - `MapView.HEIGHT_SHADER` - 3D terrain with shader-based displacement
+  - `MapView.SPHERICAL` - Globe view
+  - `MapView.MARTINI` - MARTINI mesh simplification for height
+
+**Coordinate System:**
+- Uses EPSG:900913 (Spherical Mercator) coordinate format internally
+- Convert lat/lng to world coordinates: `UnitsUtils.datumsToSpherical(lat, lng)`
+- Camera target example: `controls.target.set(coords.x, 0, -coords.y)`
+- Origin positioning: `mapView.position.set(-originCoords.x, 0, originCoords.y)`
+
+**Raycasting for Terrain Height:**
+- Terrain tiles load asynchronously, so immediate raycasting may fail
+- Use `useFrame()` to continuously raycast until terrain tiles are loaded
+- Raycast from high above (e.g., y: 10000) downward to get terrain elevation
+- Only position objects when `terrainHeight > 0` (successful raycast)
+- Offset objects above terrain (e.g., +50m for route, +100m for markers) to ensure visibility
+
+**Performance:**
+- Use `LODRaycast` for efficient level-of-detail management
+- Sample route points (e.g., every 10th point) to reduce geometry complexity
+- LOD updates automatically via `onBeforeRender` callback
+
 ## Code Patterns
 
 - All components use functional React with hooks
