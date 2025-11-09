@@ -391,7 +391,7 @@ function RouteLine({ coordsToWorld, getHeightAt, mapView }) {
 }
 
 // Camera positioning component
-function CameraPositioner({ athletePositions, coordsToWorld }) {
+function CameraPositioner({ athletePositions, coordsToWorld, onCameraUpdate }) {
   const { camera } = useThree()
   const [isPositioned, setIsPositioned] = useState(false)
 
@@ -433,11 +433,23 @@ function CameraPositioner({ athletePositions, coordsToWorld }) {
     })
   }, [camera, athletePositions, coordsToWorld, isPositioned])
 
+  // Update camera info every frame
+  useFrame(() => {
+    if (!onCameraUpdate) return
+
+    onCameraUpdate({
+      x: camera.position.x,
+      y: camera.position.y,
+      z: camera.position.z,
+      fov: camera.fov
+    })
+  })
+
   return null
 }
 
 // Main AR Scene component
-function ARScene({ athletePositions, viewerPosition }) {
+function ARScene({ athletePositions, viewerPosition, onCameraUpdate }) {
   const [terrainData, setTerrainData] = useState(null)
   const [mapOrigin] = useState(() => {
     // Calculate origin once on mount
@@ -516,6 +528,7 @@ function ARScene({ athletePositions, viewerPosition }) {
         <CameraPositioner
           athletePositions={athletePositions}
           coordsToWorld={terrainData.coordsToWorld}
+          onCameraUpdate={onCameraUpdate}
         />
       )}
     </>
@@ -525,6 +538,12 @@ function ARScene({ athletePositions, viewerPosition }) {
 // Main ARView component - wrapper for Canvas
 export default function ARView({ isOpen, onClose, athletePositions = [], currentPosition = null }) {
   const [viewerPosition, setViewerPosition] = useState(null)
+  const [cameraInfo, setCameraInfo] = useState({
+    x: 0,
+    y: 0,
+    z: 0,
+    fov: 60
+  })
 
   useEffect(() => {
     if (isOpen && currentPosition) {
@@ -535,6 +554,10 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
       })
     }
   }, [isOpen, currentPosition])
+
+  const handleCameraUpdate = useCallback((info) => {
+    setCameraInfo(info)
+  }, [])
 
   if (!isOpen) return null
 
@@ -576,6 +599,7 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
         <ARScene
           athletePositions={positions}
           viewerPosition={viewer}
+          onCameraUpdate={handleCameraUpdate}
         />
       </Canvas>
 
@@ -591,6 +615,15 @@ export default function ARView({ isOpen, onClose, athletePositions = [], current
               Lat: {viewerPosition.lat.toFixed(5)} | Lng: {viewerPosition.lng.toFixed(5)}
             </p>
           )}
+          <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>Camera Position</p>
+            <p style={{ fontSize: '0.7rem', opacity: 0.9 }}>
+              X: {cameraInfo.x.toFixed(1)} | Y: {cameraInfo.y.toFixed(1)} | Z: {cameraInfo.z.toFixed(1)}
+            </p>
+            <p style={{ fontSize: '0.7rem', opacity: 0.9, marginTop: '0.25rem' }}>
+              Height: {(cameraInfo.y / 1000).toFixed(2)} km | FOV: {cameraInfo.fov.toFixed(0)}°
+            </p>
+          </div>
         </div>
       </div>
     </div>
