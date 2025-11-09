@@ -86,9 +86,10 @@ function Terrain({ origin, onReady }) {
           false
         )
 
-        // Create planar map view with height data support
+        // Create map view with HEIGHT mode for 3D terrain
         // MapView(root, provider, heightProvider)
-        const mapView = new MapView(MapView.PLANAR, satelliteProvider, heightProvider)
+        // Use MapView.HEIGHT to enable MapHeightNode rendering with elevation data
+        const mapView = new MapView(MapView.HEIGHT, satelliteProvider, heightProvider)
 
         // Override with LODRaycast for better performance
         mapView.lod = new LODRaycast()
