@@ -313,7 +313,6 @@ function AthleteMarker({ athlete, coordsToWorld, getHeightAt, viewerPosition }) 
 function RouteLine({ coordsToWorld, getHeightAt }) {
   const [routeCoords, setRouteCoords] = useState(null)
   const lineRef = useRef()
-  const hasPositionedRef = useRef(false)
 
   // Load route GeoJSON once
   useEffect(() => {
@@ -339,31 +338,22 @@ function RouteLine({ coordsToWorld, getHeightAt }) {
 
     // Convert route coordinates to 3D world positions with terrain height
     const points = []
-    let hasValidHeight = false
 
     for (const coord of routeCoords) {
       const pos = coordsToWorld(coord[1], coord[0]) // [lng, lat] -> [lat, lng]
       const terrainHeight = getHeightAt(coord[1], coord[0])
 
-      if (terrainHeight > 0) {
-        hasValidHeight = true
-      }
-
-      // Offset above terrain to be visible (100m above)
-      points.push(new THREE.Vector3(pos.x, terrainHeight + 100, pos.z))
+      // Offset significantly above terrain to ensure visibility (200m above)
+      points.push(new THREE.Vector3(pos.x, terrainHeight + 200, pos.z))
     }
 
-    // Only update geometry if we have valid heights and haven't positioned yet
-    if (hasValidHeight && !hasPositionedRef.current) {
-      const positions = new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))
-      lineRef.current.geometry.setAttribute(
-        'position',
-        new THREE.BufferAttribute(positions, 3)
-      )
-      lineRef.current.geometry.attributes.position.needsUpdate = true
-      hasPositionedRef.current = true
-      console.log('Route positioned on 3D terrain with valid heights')
-    }
+    // Continuously update geometry as terrain tiles load
+    const positions = new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))
+    lineRef.current.geometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    )
+    lineRef.current.geometry.attributes.position.needsUpdate = true
   })
 
   if (!routeCoords) return null
@@ -381,7 +371,14 @@ function RouteLine({ coordsToWorld, getHeightAt }) {
           itemSize={3}
         />
       </bufferGeometry>
-      <lineBasicMaterial color="#FFFF00" linewidth={3} transparent opacity={0.8} />
+      <lineBasicMaterial
+        color="#FFFF00"
+        linewidth={3}
+        transparent
+        opacity={0.9}
+        depthTest={false}
+        depthWrite={false}
+      />
     </line>
   )
 }

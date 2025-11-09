@@ -15,7 +15,7 @@ const MapComponent = forwardRef((props, ref) => {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/standard',
+      style: 'mapbox://styles/mapbox/outdoors-v12',
       center: [0, 0],
       zoom: 2,
       projection: 'globe',
