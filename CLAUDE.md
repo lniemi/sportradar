@@ -315,3 +315,13 @@ The root directory contains source files including `TOR330-CERT-2025.gpx` (origi
 - GeoJSON features use MultiLineString geometry (access via `features[0].geometry.coordinates[0]`)
 - Simulation modes are mutually exclusive (starting one stops the other)
 - Use `window.Map()` instead of `Map()` when JavaScript's Map constructor is needed in Map.jsx to avoid naming conflicts
+
+## Research Modules
+
+### LOS Module (`los_module/`)
+
+The `los_module/` folder contains **research-only** code for developing Line of Sight (LOS) calculations. This is a Python-based exploration environment separate from the main React application.
+
+**Important**: This folder is not part of the main application build. It uses its own Python virtual environment and dependencies.
+
+See [los_module/CLAUDE.md](los_module/CLAUDE.md) for detailed instructions on working with this module.
