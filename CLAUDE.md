@@ -14,7 +14,8 @@ This is a **pnpm monorepo** with Turborepo for build orchestration:
 sportradar/
 ├── apps/
 │   ├── spectator/          # Main spectator app (React + Vite + TypeScript)
-│   └── website/            # Company website (React + Vite + TypeScript)
+│   ├── website/            # Company website (React + Vite + TypeScript)
+│   └── docs/               # Documentation site (Docusaurus)
 ├── packages/
 │   ├── auth/               # Supabase authentication (@sportradar/auth)
 │   ├── ui/                 # Shared UI components (@sportradar/ui)
@@ -50,11 +51,13 @@ pnpm install
 pnpm dev                  # Run all apps in dev mode
 pnpm dev:spectator        # Run spectator app only (port 5173)
 pnpm dev:website          # Run website only (port 5174)
+pnpm dev:docs             # Run documentation only (port 3000)
 
 # Build
 pnpm build                # Build all apps
 pnpm build:spectator      # Build spectator app only
 pnpm build:website        # Build website only
+pnpm build:docs           # Build documentation only
 
 # Other
 pnpm lint                 # Lint all packages
@@ -425,6 +428,53 @@ optimizeDeps: {
 - GeoJSON features use MultiLineString geometry (access via `features[0].geometry.coordinates[0]`)
 - Simulation modes are mutually exclusive (starting one stops the other)
 - Use `window.Map()` instead of `Map()` when JavaScript's Map constructor is needed in Map.jsx to avoid naming conflicts
+
+## Documentation Site
+
+The documentation is built with [Docusaurus](https://docusaurus.io/) and located in [apps/docs/](apps/docs/).
+
+### Structure
+
+```
+apps/docs/
+├── docs/                    # Markdown documentation files
+│   ├── intro.md             # Introduction page
+│   ├── getting-started/     # Installation & development guides
+│   ├── architecture/        # System architecture docs
+│   ├── apps/                # App-specific documentation
+│   ├── packages/            # Package documentation
+│   └── features/            # Feature documentation
+├── src/
+│   ├── pages/               # Custom React pages (homepage)
+│   └── css/                 # Custom styling
+├── static/
+│   ├── img/                 # Images and logos
+│   └── files/               # Downloadable files (presentations, etc.)
+├── docusaurus.config.ts     # Docusaurus configuration
+├── sidebars.ts              # Sidebar navigation structure
+└── package.json
+```
+
+### Running Documentation
+
+```bash
+pnpm dev:docs    # Start dev server at http://localhost:3000
+pnpm build:docs  # Build for production
+```
+
+### Adding Documentation
+
+1. Create markdown files in `apps/docs/docs/`
+2. Update `apps/docs/sidebars.ts` to include new pages in navigation
+3. Use standard Markdown with Docusaurus extensions (admonitions, tabs, etc.)
+
+### Static Files
+
+Static files in `apps/docs/static/` are served at the root URL:
+- `static/img/logo.svg` → `/img/logo.svg`
+- `static/files/presentation.pptx` → `/files/presentation.pptx`
+
+The existing `TrailRadar_Technical_Architecture.pptx` is available at `/files/TrailRadar_Technical_Architecture.pptx`.
 
 ## Research Modules
 

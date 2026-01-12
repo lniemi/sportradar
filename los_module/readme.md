@@ -66,3 +66,8 @@ For the TOR330 route in the Italian/French Alps (Aosta Valley area), the terrain
 There may be multiple ways to integrate this module into the main application. First that comes to mind is this:
 
 **Integration with ARView**. ARView was designed from the beginning to visualize geospatial data in augmented reality. The LOS module can leverage ARView's capabilities to display line of sight results directly within an AR environment, providing users with an immersive experience.
+
+
+#### Final note
+
+While this folder is currently titled as "los_module" as researching the is the first theoretical issue to be solved, it might be good idea to later rename and repurpose this module to a more r&d module that focuses on the early stage research and prototyping of various features that later might be integrated into the main application. This would make it more flexible and reusable for future needs.
