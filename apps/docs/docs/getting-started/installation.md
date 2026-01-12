@@ -11,7 +11,7 @@ This guide will help you set up the TrailRadar development environment.
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/trailradar/trailradar.git
+git clone https://github.com/lniemi/trailradar.git
 cd trailradar
 ```
 

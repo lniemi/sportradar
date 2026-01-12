@@ -53,7 +53,7 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          href: 'https://github.com/trailradar/trailradar',
+          href: 'https://github.com/lniemi/trailradar',
           label: 'GitHub',
           position: 'right',
         },
