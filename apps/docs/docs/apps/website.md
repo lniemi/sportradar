@@ -1,10 +1,10 @@
 # Website
 
-The SportRadar company website.
+The TrailRadar company website.
 
 ## Overview
 
-A marketing website for SportRadar built with React and Vite.
+A marketing website for TrailRadar built with React and Vite.
 
 ## Technology
 
@@ -51,6 +51,6 @@ apps/website/
 The website can use shared packages:
 
 ```typescript
-import { Button, Card } from '@sportradar/ui'
-import { AuthProvider } from '@sportradar/auth'
+import { Button, Card } from '@trailradar/ui'
+import { AuthProvider } from '@trailradar/auth'
 ```

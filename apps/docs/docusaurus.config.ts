@@ -3,15 +3,15 @@ import type { Config } from '@docusaurus/types'
 import type * as Preset from '@docusaurus/preset-classic'
 
 const config: Config = {
-  title: 'SportRadar',
+  title: 'TrailRadar',
   tagline: 'Ultra-trail event spectator application documentation',
   favicon: 'img/logo.svg',
 
-  url: 'https://sportradar.example.com',
+  url: 'https://trailradar.example.com',
   baseUrl: '/',
 
-  organizationName: 'sportradar',
-  projectName: 'sportradar',
+  organizationName: 'trailradar',
+  projectName: 'trailradar',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -40,9 +40,9 @@ const config: Config = {
   themeConfig: {
     image: 'img/social-card.jpg',
     navbar: {
-      title: 'SportRadar',
+      title: 'TrailRadar',
       logo: {
-        alt: 'SportRadar Logo',
+        alt: 'TrailRadar Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -53,7 +53,7 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          href: 'https://github.com/sportradar/sportradar',
+          href: 'https://github.com/trailradar/trailradar',
           label: 'GitHub',
           position: 'right',
         },
@@ -89,7 +89,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} SportRadar. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} TrailRadar. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

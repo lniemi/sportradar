@@ -1,7 +1,7 @@
 {
   "id": "intro",
   "title": "Introduction",
-  "description": "Welcome to SportRadar - an ultra-trail event spectator application that displays participant locations on a map in real-time.",
+  "description": "Welcome to TrailRadar - an ultra-trail event spectator application that displays participant locations on a map in real-time.",
   "source": "@site/docs/intro.md",
   "sourceDirName": ".",
   "slug": "/intro",

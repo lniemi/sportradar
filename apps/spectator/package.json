@@ -1,5 +1,5 @@
 {
-  "name": "@sportradar/spectator",
+  "name": "@trailradar/spectator",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -12,9 +12,9 @@
     "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
-    "@sportradar/auth": "workspace:*",
-    "@sportradar/ui": "workspace:*",
-    "@sportradar/utils": "workspace:*",
+    "@trailradar/auth": "workspace:*",
+    "@trailradar/ui": "workspace:*",
+    "@trailradar/utils": "workspace:*",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "geo-three": "^0.1.15",
@@ -25,8 +25,8 @@
     "three": "^0.181.0"
   },
   "devDependencies": {
-    "@sportradar/config": "workspace:*",
-    "@sportradar/typescript-config": "workspace:*",
+    "@trailradar/config": "workspace:*",
+    "@trailradar/typescript-config": "workspace:*",
     "@eslint/js": "^9.36.0",
     "@tailwindcss/vite": "^4.1.17",
     "@types/react": "^19.1.16",

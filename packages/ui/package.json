@@ -1,5 +1,5 @@
 {
-  "name": "@sportradar/ui",
+  "name": "@trailradar/ui",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -18,7 +18,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@sportradar/typescript-config": "workspace:*",
+    "@trailradar/typescript-config": "workspace:*",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "typescript": "^5.7.0"

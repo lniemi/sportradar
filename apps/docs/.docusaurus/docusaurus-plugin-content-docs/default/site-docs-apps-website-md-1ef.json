@@ -1,7 +1,7 @@
 {
   "id": "apps/website",
   "title": "Website",
-  "description": "The SportRadar company website.",
+  "description": "The TrailRadar company website.",
   "source": "@site/docs/apps/website.md",
   "sourceDirName": "apps",
   "slug": "/apps/website",
@@ -17,7 +17,7 @@
     "permalink": "/docs/apps/spectator"
   },
   "next": {
-    "title": "@sportradar/auth",
+    "title": "@trailradar/auth",
     "permalink": "/docs/packages/auth"
   }
 }

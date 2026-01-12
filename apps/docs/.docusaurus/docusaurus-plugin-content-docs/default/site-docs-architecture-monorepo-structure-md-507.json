@@ -1,7 +1,7 @@
 {
   "id": "architecture/monorepo-structure",
   "title": "Monorepo Structure",
-  "description": "SportRadar uses a pnpm monorepo with Turborepo for build orchestration.",
+  "description": "TrailRadar uses a pnpm monorepo with Turborepo for build orchestration.",
   "source": "@site/docs/architecture/monorepo-structure.md",
   "sourceDirName": "architecture",
   "slug": "/architecture/monorepo-structure",

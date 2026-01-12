@@ -1,6 +1,6 @@
-# @sportradar/config
+# @trailradar/config
 
-Shared configuration files for SportRadar applications.
+Shared configuration files for TrailRadar applications.
 
 ## Overview
 
@@ -14,7 +14,7 @@ In your package's ESLint config:
 
 ```javascript
 // eslint.config.js
-import baseConfig from '@sportradar/config/eslint'
+import baseConfig from '@trailradar/config/eslint'
 
 export default [
   ...baseConfig,
@@ -38,7 +38,7 @@ In your package's Tailwind config:
 
 ```javascript
 // tailwind.config.js
-import baseConfig from '@sportradar/config/tailwind'
+import baseConfig from '@trailradar/config/tailwind'
 
 export default {
   ...baseConfig,
@@ -59,14 +59,14 @@ export default {
 
 ## TypeScript Configuration
 
-For TypeScript configuration, see [@sportradar/typescript-config](/docs/packages/config#typescript-config).
+For TypeScript configuration, see [@trailradar/typescript-config](/docs/packages/config#typescript-config).
 
 ### Base Config
 
 ```json
 // tsconfig.json
 {
-  "extends": "@sportradar/typescript-config/base.json",
+  "extends": "@trailradar/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist"
   },
@@ -79,7 +79,7 @@ For TypeScript configuration, see [@sportradar/typescript-config](/docs/packages
 ```json
 // tsconfig.json
 {
-  "extends": "@sportradar/typescript-config/react.json",
+  "extends": "@trailradar/typescript-config/react.json",
   "compilerOptions": {
     "outDir": "./dist"
   },

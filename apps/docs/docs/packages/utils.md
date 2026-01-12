@@ -1,6 +1,6 @@
-# @sportradar/utils
+# @trailradar/utils
 
-Shared utilities for SportRadar applications, primarily geographic calculations.
+Shared utilities for TrailRadar applications, primarily geographic calculations.
 
 ## Installation
 
@@ -11,7 +11,7 @@ import {
   haversineDistance,
   calculateTotalDistance,
   getPositionAtDistance
-} from '@sportradar/utils/geo'
+} from '@trailradar/utils/geo'
 ```
 
 ## Geographic Utilities
@@ -21,7 +21,7 @@ import {
 Calculate the distance between two geographic points using the Haversine formula.
 
 ```typescript
-import { haversineDistance } from '@sportradar/utils/geo'
+import { haversineDistance } from '@trailradar/utils/geo'
 
 const distance = haversineDistance(
   { lat: 45.5231, lng: 7.2341 },
@@ -47,7 +47,7 @@ console.log(distance) // Distance in meters
 Calculate the total distance of a route (array of coordinates).
 
 ```typescript
-import { calculateTotalDistance } from '@sportradar/utils/geo'
+import { calculateTotalDistance } from '@trailradar/utils/geo'
 
 const route = [
   [7.2341, 45.5231, 1500], // [lng, lat, elevation]
@@ -74,7 +74,7 @@ console.log(totalDistance) // Total distance in meters
 Get the interpolated position at a specific distance along a route.
 
 ```typescript
-import { getPositionAtDistance } from '@sportradar/utils/geo'
+import { getPositionAtDistance } from '@trailradar/utils/geo'
 
 const route = [
   [7.2341, 45.5231, 1500],
@@ -128,7 +128,7 @@ map.updateAthletePosition(position.lng, position.lat)
 
 ## Coordinate Format
 
-SportRadar uses the GeoJSON coordinate format:
+TrailRadar uses the GeoJSON coordinate format:
 
 ```
 [longitude, latitude, elevation]

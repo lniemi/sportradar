@@ -1,6 +1,6 @@
 # Installation
 
-This guide will help you set up the SportRadar development environment.
+This guide will help you set up the TrailRadar development environment.
 
 ## Prerequisites
 
@@ -11,8 +11,8 @@ This guide will help you set up the SportRadar development environment.
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/sportradar/sportradar.git
-cd sportradar
+git clone https://github.com/trailradar/trailradar.git
+cd trailradar
 ```
 
 ## Install Dependencies

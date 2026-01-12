@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom'
-import { Button, Card } from '@sportradar/ui'
+import { Button, Card } from '@trailradar/ui'
 
 function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
       <header className="container mx-auto px-6 py-8">
         <nav className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-yellow-400">Sport Radar</h1>
+          <h1 className="text-2xl font-bold text-yellow-400">TrailRadar</h1>
           <div className="flex gap-4">
             <Button variant="ghost">Features</Button>
             <Button variant="ghost">About</Button>
@@ -66,7 +66,7 @@ function HomePage() {
 
       <footer className="container mx-auto px-6 py-8 border-t border-gray-700 mt-16">
         <p className="text-center text-gray-400">
-          &copy; {new Date().getFullYear()} Sport Radar. All rights reserved.
+          &copy; {new Date().getFullYear()} TrailRadar. All rights reserved.
         </p>
       </footer>
     </div>

@@ -1,7 +1,7 @@
 {
   "id": "packages/config",
-  "title": "@sportradar/config",
-  "description": "Shared configuration files for SportRadar applications.",
+  "title": "@trailradar/config",
+  "description": "Shared configuration files for TrailRadar applications.",
   "source": "@site/docs/packages/config.md",
   "sourceDirName": "packages",
   "slug": "/packages/config",
@@ -13,7 +13,7 @@
   "frontMatter": {},
   "sidebar": "tutorialSidebar",
   "previous": {
-    "title": "@sportradar/utils",
+    "title": "@trailradar/utils",
     "permalink": "/docs/packages/utils"
   },
   "next": {

@@ -1,13 +1,13 @@
-# @sportradar/ui
+# @trailradar/ui
 
-Shared UI components for SportRadar applications.
+Shared UI components for TrailRadar applications.
 
 ## Installation
 
 This package is included in the monorepo. Import directly:
 
 ```typescript
-import { Button, Card } from '@sportradar/ui'
+import { Button, Card } from '@trailradar/ui'
 ```
 
 ## Components
@@ -17,7 +17,7 @@ import { Button, Card } from '@sportradar/ui'
 A styled button component.
 
 ```tsx
-import { Button } from '@sportradar/ui'
+import { Button } from '@trailradar/ui'
 
 function Example() {
   return (
@@ -43,7 +43,7 @@ function Example() {
 A container component with styling.
 
 ```tsx
-import { Card } from '@sportradar/ui'
+import { Card } from '@trailradar/ui'
 
 function Example() {
   return (
@@ -83,5 +83,5 @@ Components use Tailwind CSS classes internally. You can extend styles using the 
 ### Building
 
 ```bash
-pnpm --filter @sportradar/ui build
+pnpm --filter @trailradar/ui build
 ```

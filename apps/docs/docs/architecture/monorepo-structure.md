@@ -1,21 +1,21 @@
 # Monorepo Structure
 
-SportRadar uses a pnpm monorepo with Turborepo for build orchestration.
+TrailRadar uses a pnpm monorepo with Turborepo for build orchestration.
 
 ## Directory Layout
 
 ```
-sportradar/
+trailradar/
 ├── apps/
 │   ├── spectator/          # Main spectator app
 │   ├── website/            # Company website
 │   └── docs/               # Documentation (Docusaurus)
 ├── packages/
-│   ├── auth/               # @sportradar/auth
-│   ├── ui/                 # @sportradar/ui
-│   ├── utils/              # @sportradar/utils
-│   ├── config/             # @sportradar/config
-│   └── typescript-config/  # @sportradar/typescript-config
+│   ├── auth/               # @trailradar/auth
+│   ├── ui/                 # @trailradar/ui
+│   ├── utils/              # @trailradar/utils
+│   ├── config/             # @trailradar/config
+│   └── typescript-config/  # @trailradar/typescript-config
 ├── supabase/               # Supabase configuration
 ├── data/                   # Shared data files
 ├── los_module/             # Python research module
@@ -30,7 +30,7 @@ sportradar/
 
 The main application for spectators to track race participants.
 
-- **Package name**: `@sportradar/spectator`
+- **Package name**: `@trailradar/spectator`
 - **Port**: 5173
 - **Tech**: React + Vite + TypeScript
 
@@ -38,7 +38,7 @@ The main application for spectators to track race participants.
 
 The company marketing website.
 
-- **Package name**: `@sportradar/website`
+- **Package name**: `@trailradar/website`
 - **Port**: 5174
 - **Tech**: React + Vite + TypeScript
 
@@ -46,29 +46,29 @@ The company marketing website.
 
 This documentation site.
 
-- **Package name**: `@sportradar/docs`
+- **Package name**: `@trailradar/docs`
 - **Port**: 3000
 - **Tech**: Docusaurus
 
 ## Packages
 
-### @sportradar/auth
+### @trailradar/auth
 
 Authentication utilities using Supabase.
 
 ```typescript
-import { AuthProvider, useAuth, getSupabaseClient } from '@sportradar/auth'
+import { AuthProvider, useAuth, getSupabaseClient } from '@trailradar/auth'
 ```
 
-### @sportradar/ui
+### @trailradar/ui
 
 Shared UI components.
 
 ```typescript
-import { Button, Card } from '@sportradar/ui'
+import { Button, Card } from '@trailradar/ui'
 ```
 
-### @sportradar/utils
+### @trailradar/utils
 
 Shared utilities, primarily geo calculations.
 
@@ -77,14 +77,14 @@ import {
   haversineDistance,
   calculateTotalDistance,
   getPositionAtDistance
-} from '@sportradar/utils/geo'
+} from '@trailradar/utils/geo'
 ```
 
-### @sportradar/config
+### @trailradar/config
 
 Shared ESLint and Tailwind configurations.
 
-### @sportradar/typescript-config
+### @trailradar/typescript-config
 
 Shared TypeScript configuration files.
 
@@ -110,6 +110,6 @@ Defines the task pipeline:
 ## Adding New Packages
 
 1. Create directory under `apps/` or `packages/`
-2. Add `package.json` with appropriate name (e.g., `@sportradar/new-package`)
+2. Add `package.json` with appropriate name (e.g., `@trailradar/new-package`)
 3. The workspace will automatically recognize it
 4. Run `pnpm install` to link dependencies

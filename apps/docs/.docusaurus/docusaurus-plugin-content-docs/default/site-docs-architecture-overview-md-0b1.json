@@ -1,7 +1,7 @@
 {
   "id": "architecture/overview",
   "title": "Architecture Overview",
-  "description": "SportRadar is designed as a modern, scalable web application for real-time event tracking.",
+  "description": "TrailRadar is designed as a modern, scalable web application for real-time event tracking.",
   "source": "@site/docs/architecture/overview.md",
   "sourceDirName": "architecture",
   "slug": "/architecture/overview",

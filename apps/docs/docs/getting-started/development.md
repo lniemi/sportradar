@@ -1,6 +1,6 @@
 # Development
 
-This guide covers the development workflow for SportRadar.
+This guide covers the development workflow for TrailRadar.
 
 ## Development Commands
 
@@ -77,9 +77,9 @@ The monorepo uses pnpm workspaces. Packages can import each other using their pa
 
 ```typescript
 // Import from shared packages
-import { haversineDistance } from '@sportradar/utils/geo'
-import { AuthProvider, useAuth } from '@sportradar/auth'
-import { Button, Card } from '@sportradar/ui'
+import { haversineDistance } from '@trailradar/utils/geo'
+import { AuthProvider, useAuth } from '@trailradar/auth'
+import { Button, Card } from '@trailradar/ui'
 ```
 
 ### Adding Dependencies
@@ -88,20 +88,20 @@ To add a dependency to a specific package:
 
 ```bash
 # Add to spectator app
-pnpm --filter @sportradar/spectator add package-name
+pnpm --filter @trailradar/spectator add package-name
 
 # Add to shared utils
-pnpm --filter @sportradar/utils add package-name
+pnpm --filter @trailradar/utils add package-name
 
 # Add dev dependency
-pnpm --filter @sportradar/spectator add -D package-name
+pnpm --filter @trailradar/spectator add -D package-name
 ```
 
 ### Running Commands in Specific Packages
 
 ```bash
-pnpm --filter @sportradar/spectator <command>
-pnpm --filter @sportradar/website <command>
+pnpm --filter @trailradar/spectator <command>
+pnpm --filter @trailradar/website <command>
 ```
 
 ## Turborepo

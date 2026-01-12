@@ -1,7 +1,7 @@
 {
   "id": "packages/ui",
-  "title": "@sportradar/ui",
-  "description": "Shared UI components for SportRadar applications.",
+  "title": "@trailradar/ui",
+  "description": "Shared UI components for TrailRadar applications.",
   "source": "@site/docs/packages/ui.md",
   "sourceDirName": "packages",
   "slug": "/packages/ui",
@@ -13,11 +13,11 @@
   "frontMatter": {},
   "sidebar": "tutorialSidebar",
   "previous": {
-    "title": "@sportradar/auth",
+    "title": "@trailradar/auth",
     "permalink": "/docs/packages/auth"
   },
   "next": {
-    "title": "@sportradar/utils",
+    "title": "@trailradar/utils",
     "permalink": "/docs/packages/utils"
   }
 }

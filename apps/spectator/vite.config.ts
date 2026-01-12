@@ -32,6 +32,6 @@ export default defineConfig({
       'mapbox-gl',
       'geo-three',
     ],
-    exclude: ['@sportradar/ui', '@sportradar/auth', '@sportradar/utils'],
+    exclude: ['@trailradar/ui', '@trailradar/auth', '@trailradar/utils'],
   },
 })

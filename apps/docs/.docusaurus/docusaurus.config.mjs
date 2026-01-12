@@ -4,13 +4,13 @@
  * Modify the docusaurus.config.js file at your site's root instead.
  */
 export default {
-  "title": "SportRadar",
+  "title": "TrailRadar",
   "tagline": "Ultra-trail event spectator application documentation",
   "favicon": "img/logo.svg",
-  "url": "https://sportradar.example.com",
+  "url": "https://trailradar.example.com",
   "baseUrl": "/",
-  "organizationName": "sportradar",
-  "projectName": "sportradar",
+  "organizationName": "trailradar",
+  "projectName": "trailradar",
   "onBrokenLinks": "throw",
   "i18n": {
     "defaultLocale": "en",
@@ -38,9 +38,9 @@ export default {
   "themeConfig": {
     "image": "img/social-card.jpg",
     "navbar": {
-      "title": "SportRadar",
+      "title": "TrailRadar",
       "logo": {
-        "alt": "SportRadar Logo",
+        "alt": "TrailRadar Logo",
         "src": "img/logo.svg"
       },
       "items": [
@@ -51,7 +51,7 @@ export default {
           "label": "Documentation"
         },
         {
-          "href": "https://github.com/sportradar/sportradar",
+          "href": "https://github.com/trailradar/trailradar",
           "label": "GitHub",
           "position": "right"
         }
@@ -88,7 +88,7 @@ export default {
           ]
         }
       ],
-      "copyright": "Copyright © 2026 SportRadar. Built with Docusaurus."
+      "copyright": "Copyright © 2026 TrailRadar. Built with Docusaurus."
     },
     "prism": {
       "theme": {

@@ -1,7 +1,7 @@
 {
   "id": "packages/auth",
-  "title": "@sportradar/auth",
-  "description": "Supabase authentication package for SportRadar applications.",
+  "title": "@trailradar/auth",
+  "description": "Supabase authentication package for TrailRadar applications.",
   "source": "@site/docs/packages/auth.md",
   "sourceDirName": "packages",
   "slug": "/packages/auth",
@@ -17,7 +17,7 @@
     "permalink": "/docs/apps/website"
   },
   "next": {
-    "title": "@sportradar/ui",
+    "title": "@trailradar/ui",
     "permalink": "/docs/packages/ui"
   }
 }

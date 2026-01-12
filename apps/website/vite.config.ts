@@ -14,6 +14,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['@sportradar/ui'],
+    include: ['@trailradar/ui'],
   },
 })

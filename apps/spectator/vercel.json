@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "installCommand": "cd ../.. && pnpm install",
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@sportradar/spectator",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@trailradar/spectator",
   "outputDirectory": "dist"
 }

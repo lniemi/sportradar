@@ -1,7 +1,7 @@
 {
   "id": "getting-started/installation",
   "title": "Installation",
-  "description": "This guide will help you set up the SportRadar development environment.",
+  "description": "This guide will help you set up the TrailRadar development environment.",
   "source": "@site/docs/getting-started/installation.md",
   "sourceDirName": "getting-started",
   "slug": "/getting-started/installation",

@@ -1,7 +1,7 @@
 {
   "id": "packages/utils",
-  "title": "@sportradar/utils",
-  "description": "Shared utilities for SportRadar applications, primarily geographic calculations.",
+  "title": "@trailradar/utils",
+  "description": "Shared utilities for TrailRadar applications, primarily geographic calculations.",
   "source": "@site/docs/packages/utils.md",
   "sourceDirName": "packages",
   "slug": "/packages/utils",
@@ -13,11 +13,11 @@
   "frontMatter": {},
   "sidebar": "tutorialSidebar",
   "previous": {
-    "title": "@sportradar/ui",
+    "title": "@trailradar/ui",
     "permalink": "/docs/packages/ui"
   },
   "next": {
-    "title": "@sportradar/config",
+    "title": "@trailradar/config",
     "permalink": "/docs/packages/config"
   }
 }

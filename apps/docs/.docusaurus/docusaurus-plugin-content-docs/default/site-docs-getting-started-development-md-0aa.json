@@ -1,7 +1,7 @@
 {
   "id": "getting-started/development",
   "title": "Development",
-  "description": "This guide covers the development workflow for SportRadar.",
+  "description": "This guide covers the development workflow for TrailRadar.",
   "source": "@site/docs/getting-started/development.md",
   "sourceDirName": "getting-started",
   "slug": "/getting-started/development",

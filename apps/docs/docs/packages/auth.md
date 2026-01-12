@@ -1,13 +1,13 @@
-# @sportradar/auth
+# @trailradar/auth
 
-Supabase authentication package for SportRadar applications.
+Supabase authentication package for TrailRadar applications.
 
 ## Installation
 
 This package is included in the monorepo. Import directly:
 
 ```typescript
-import { AuthProvider, useAuth, getSupabaseClient } from '@sportradar/auth'
+import { AuthProvider, useAuth, getSupabaseClient } from '@trailradar/auth'
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ import { AuthProvider, useAuth, getSupabaseClient } from '@sportradar/auth'
 Wrap your application with the AuthProvider:
 
 ```tsx
-import { AuthProvider } from '@sportradar/auth'
+import { AuthProvider } from '@trailradar/auth'
 
 function App() {
   return (
@@ -33,7 +33,7 @@ function App() {
 Access authentication state and methods:
 
 ```tsx
-import { useAuth } from '@sportradar/auth'
+import { useAuth } from '@trailradar/auth'
 
 function Profile() {
   const { user, signIn, signOut, loading } = useAuth()
@@ -58,7 +58,7 @@ function Profile() {
 Access the Supabase client directly:
 
 ```typescript
-import { getSupabaseClient } from '@sportradar/auth'
+import { getSupabaseClient } from '@trailradar/auth'
 
 const supabase = getSupabaseClient()
 

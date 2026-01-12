@@ -1,10 +1,10 @@
 # Introduction
 
-Welcome to **SportRadar** - an ultra-trail event spectator application that displays participant locations on a map in real-time.
+Welcome to **TrailRadar** - an ultra-trail event spectator application that displays participant locations on a map in real-time.
 
-## What is SportRadar?
+## What is TrailRadar?
 
-SportRadar allows spectators to:
+TrailRadar allows spectators to:
 
 - **Follow participants** on an interactive map with live position updates
 - **Track progress** including distance covered, elapsed time, and current position
@@ -20,10 +20,10 @@ SportRadar allows spectators to:
 
 ## Project Structure
 
-SportRadar is organized as a **pnpm monorepo** with multiple apps and shared packages:
+TrailRadar is organized as a **pnpm monorepo** with multiple apps and shared packages:
 
 ```
-sportradar/
+trailradar/
 ├── apps/
 │   ├── spectator/    # Main spectator app
 │   ├── website/      # Company website

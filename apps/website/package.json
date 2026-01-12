@@ -1,5 +1,5 @@
 {
-  "name": "@sportradar/website",
+  "name": "@trailradar/website",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -12,14 +12,14 @@
     "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
-    "@sportradar/ui": "workspace:*",
+    "@trailradar/ui": "workspace:*",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5"
   },
   "devDependencies": {
-    "@sportradar/config": "workspace:*",
-    "@sportradar/typescript-config": "workspace:*",
+    "@trailradar/config": "workspace:*",
+    "@trailradar/typescript-config": "workspace:*",
     "@eslint/js": "^9.36.0",
     "@tailwindcss/vite": "^4.1.17",
     "@types/react": "^19.1.16",

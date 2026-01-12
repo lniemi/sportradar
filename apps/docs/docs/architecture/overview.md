@@ -1,6 +1,6 @@
 # Architecture Overview
 
-SportRadar is designed as a modern, scalable web application for real-time event tracking.
+TrailRadar is designed as a modern, scalable web application for real-time event tracking.
 
 ## High-Level Architecture
 
@@ -14,8 +14,8 @@ SportRadar is designed as a modern, scalable web application for real-time event
 │         │                │                                   │
 │  ┌──────┴────────────────┴──────────────────────┐          │
 │  │           Shared Packages                     │          │
-│  │  @sportradar/auth  @sportradar/ui            │          │
-│  │  @sportradar/utils @sportradar/config        │          │
+│  │  @trailradar/auth  @trailradar/ui            │          │
+│  │  @trailradar/utils @trailradar/config        │          │
 │  └──────────────────────────────────────────────┘          │
 └─────────────────────────────────────────────────────────────┘
                            │

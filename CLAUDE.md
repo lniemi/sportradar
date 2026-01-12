@@ -4,24 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Sport Radar is an ultra-trail event spectator application that displays participant locations on a map in real-time. The app allows spectators to follow specific participants, track their progress, and use AR technology to locate nearby participants when viewing events physically along the route.
+TrailRadar is an ultra-trail event spectator application that displays participant locations on a map in real-time. The app allows spectators to follow specific participants, track their progress, and use AR technology to locate nearby participants when viewing events physically along the route.
 
 ## Monorepo Structure
 
 This is a **pnpm monorepo** with Turborepo for build orchestration:
 
 ```
-sportradar/
+trailradar/
 ├── apps/
 │   ├── spectator/          # Main spectator app (React + Vite + TypeScript)
 │   ├── website/            # Company website (React + Vite + TypeScript)
 │   └── docs/               # Documentation site (Docusaurus)
 ├── packages/
-│   ├── auth/               # Supabase authentication (@sportradar/auth)
-│   ├── ui/                 # Shared UI components (@sportradar/ui)
-│   ├── utils/              # Shared utilities (@sportradar/utils)
-│   ├── config/             # Shared ESLint/Tailwind configs (@sportradar/config)
-│   └── typescript-config/  # Shared TypeScript configs (@sportradar/typescript-config)
+│   ├── auth/               # Supabase authentication (@trailradar/auth)
+│   ├── ui/                 # Shared UI components (@trailradar/ui)
+│   ├── utils/              # Shared utilities (@trailradar/utils)
+│   ├── config/             # Shared ESLint/Tailwind configs (@trailradar/config)
+│   └── typescript-config/  # Shared TypeScript configs (@trailradar/typescript-config)
 ├── supabase/               # Supabase configuration
 ├── data/                   # Shared data files (GPX, etc.)
 ├── los_module/             # Python research module (separate)
@@ -85,22 +85,22 @@ VITE_MAPBOX_ACCESS_TOKEN=your-mapbox-token
 
 ## Shared Packages
 
-### @sportradar/utils
+### @trailradar/utils
 Geo utilities for distance calculations:
 ```typescript
-import { haversineDistance, calculateTotalDistance, getPositionAtDistance } from '@sportradar/utils/geo'
+import { haversineDistance, calculateTotalDistance, getPositionAtDistance } from '@trailradar/utils/geo'
 ```
 
-### @sportradar/auth
+### @trailradar/auth
 Supabase authentication:
 ```typescript
-import { AuthProvider, useAuth, getSupabaseClient } from '@sportradar/auth'
+import { AuthProvider, useAuth, getSupabaseClient } from '@trailradar/auth'
 ```
 
-### @sportradar/ui
+### @trailradar/ui
 Shared UI components:
 ```typescript
-import { Button, Card } from '@sportradar/ui'
+import { Button, Card } from '@trailradar/ui'
 ```
 
 ## Spectator App Architecture
@@ -405,13 +405,13 @@ optimizeDeps: {
     'mapbox-gl',
     'geo-three',
   ],
-  exclude: ['@sportradar/ui', '@sportradar/auth', '@sportradar/utils'],
+  exclude: ['@trailradar/ui', '@trailradar/auth', '@trailradar/utils'],
 }
 ```
 
 **Key points:**
 - Use `>` syntax to include nested dependencies (e.g., `@react-three/drei > three-stdlib`)
-- Exclude monorepo packages (`@sportradar/*`) - they're symlinked and shouldn't be bundled
+- Exclude monorepo packages (`@trailradar/*`) - they're symlinked and shouldn't be bundled
 - Include core React packages for consistent module resolution
 
 **If you encounter "Outdated Optimize Dep" errors:**
