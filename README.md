@@ -20,7 +20,8 @@ Key Features:
 
 
 ---
-```
+<!--
+
 ### Customer Problem & Solution
 
 - Traditional broadcast solutions require cameras and crews, which are expensive and proprietary for each event.
@@ -40,8 +41,9 @@ Key Features:
 Our users will be:
 *   Fans of sports that aren't widely covered.
 *   Fans of obscure or difficult-to-visualize sports.
-```
 ---
+
+-->
 
 ## Installation
 
