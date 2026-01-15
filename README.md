@@ -20,7 +20,7 @@ Key Features:
 
 
 ---
-
+```
 ### Customer Problem & Solution
 
 - Traditional broadcast solutions require cameras and crews, which are expensive and proprietary for each event.
@@ -40,7 +40,7 @@ Key Features:
 Our users will be:
 *   Fans of sports that aren't widely covered.
 *   Fans of obscure or difficult-to-visualize sports.
-
+```
 ---
 
 ## Installation
@@ -49,7 +49,10 @@ Our users will be:
 
 - **Node.js** >= 20.0.0
 - **pnpm** >= 10.0.0 - Install according to the [pnpm documentation](https://pnpm.io/installation). Recommended: `npm install -g pnpm@latest-10`
-- **Git**
+- **Git**        
+- **Supabase**    Install according to  [supabase documentation](https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=platform&platform=windows).
+  - Docker must also be [installed](https://docs.docker.com/engine/install/).
+ 
 
 ### Clone the Repository
 
@@ -65,6 +68,17 @@ pnpm install
 ```
 
 This will install all dependencies for all apps and packages in the monorepo.
+
+### Getting API Keys
+
+**Mapbox Access Token:**
+1. Create an account at [mapbox.com](https://www.mapbox.com/)
+2. Navigate to your account's [Access Tokens page](https://account.mapbox.com/access-tokens/)
+3. Create a new token or use the default public token
+
+**Supabase Keys:**
+When running Supabase locally, the keys are provided in the output of `supabase start`.
+
 
 ### Environment Configuration
 
@@ -85,15 +99,12 @@ VITE_SUPABASE_ANON_KEY=your-local-anon-key
 VITE_MAPBOX_ACCESS_TOKEN=your-mapbox-token
 ```
 
-#### Getting API Keys
+Copy the environment file to the spectator directory
 
-**Mapbox Access Token:**
-1. Create an account at [mapbox.com](https://www.mapbox.com/)
-2. Navigate to your account's [Access Tokens page](https://account.mapbox.com/access-tokens/)
-3. Create a new token or use the default public token
+```bash
+cp .env apps/spectator/.env
+```
 
-**Supabase Keys:**
-When running Supabase locally, the keys are provided in the output of `supabase start`.
 
 ### Verify Installation
 
