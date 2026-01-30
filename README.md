@@ -107,17 +107,6 @@ Copy the environment file to the spectator directory
 cp .env apps/spectator/.env
 ```
 
-
-### Verify Installation
-
-Run the development server to verify everything is working:
-
-```bash
-pnpm dev:spectator
-```
-
-The app should be available at [http://localhost:5173](http://localhost:5173).
-
 ## Development Commands
 
 ```bash
@@ -146,3 +135,14 @@ pnpm supabase:start       # Start local Supabase
 pnpm supabase:stop        # Stop local Supabase
 pnpm supabase:reset       # Reset local database
 ```
+
+
+### Verify Installation
+
+Run the development server to verify everything is working:
+
+```bash
+pnpm dev:spectator
+```
+
+The app should be available at [http://localhost:5173](http://localhost:5173).
